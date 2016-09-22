@@ -1,6 +1,8 @@
 package com.example.dell.initialstage;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -33,7 +35,8 @@ public class Register_user extends AppCompatActivity {
     private Button submit_btn;
     private ProgressDialog progressDialog;
     private String url="http://192.168.1.5:3000";
-
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,20 +71,23 @@ public class Register_user extends AppCompatActivity {
         //get response and get event info
 
     }
+    public void fetch_event_details(){
 
+    }
     public void registerUser(){
         // Instantiate the RequestQueue.
         progressDialog.setMessage("Giving you superpowers.. Please wait");
         progressDialog.show();
 
 
-        JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.POST, url+"/register",null,
-                new Response.Listener<JSONObject>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url+"/register",
+                new Response.Listener<String>() {
                     String error,error_message,register_status;
 
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(String result) {
                         try {
+                            JSONObject response=new JSONObject(result);
                             error=response.getString("error");
                              error_message=response.getString("error_message");
                              register_status=response.getString("register_status");
@@ -91,7 +97,21 @@ public class Register_user extends AppCompatActivity {
                         }
 
                         if(error.equals("false")){
-                            
+
+                        sharedPreferences=getSharedPreferences("register_status"+event_name, Context.MODE_PRIVATE);
+                        editor=sharedPreferences.edit();
+
+                            editor.putString("user_name",user_name.getText().toString());
+                            editor.putString("user_roll_no",user_roll_no.getText().toString());
+                            editor.putString("user_branch",user_branch.getText().toString());
+                            editor.putString("user_year",user_year.getText().toString());
+                            editor.putString("user_email",user_email.getText().toString());
+                            editor.putString("user_phone_no",user_phone_no.getText().toString());
+                        editor.commit();
+
+                            //Now make a request for event details
+                            fetch_event_details();
+
                         }else{
                               Toast.makeText(getBaseContext(),"Something went wrong. We will be right back",Toast.LENGTH_LONG).show();
 
