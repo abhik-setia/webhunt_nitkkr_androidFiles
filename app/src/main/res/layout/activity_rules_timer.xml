@@ -21,6 +21,7 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_rules_timer" />
+    <include layout="@layout/content_rules_timer"
+        android:id="@+id/include" />
 
 </android.support.design.widget.CoordinatorLayout>

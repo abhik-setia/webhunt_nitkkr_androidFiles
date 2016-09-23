@@ -13,4 +13,20 @@
     tools:context="com.example.dell.initialstage.Rules_timer"
     tools:showIn="@layout/activity_rules_timer">
 
+    <TextView
+        android:text="Rules"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/Rules"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/Rules"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/rules_linear_layout"></LinearLayout>
 </RelativeLayout>

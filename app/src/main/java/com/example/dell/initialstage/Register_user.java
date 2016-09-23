@@ -1,8 +1,11 @@
 package com.example.dell.initialstage;
 
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.design.widget.FloatingActionButton;
@@ -48,8 +51,6 @@ public class Register_user extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //check shared preferences
-
 
         user_name=(EditText)findViewById(R.id.user_name);
         user_roll_no=(EditText)findViewById(R.id.user_roll_no);
@@ -64,7 +65,7 @@ public class Register_user extends AppCompatActivity {
         event_name=getIntent().getStringExtra("event_name");
         sharedPreferences=getSharedPreferences("register_status"+event_name, Context.MODE_PRIVATE);
         if(!sharedPreferences.getString("user_name","").equals("")){
-            fetch_event_details();
+            fetch_event_details(0);
         }
         submit_btn=(Button)findViewById(R.id.submit_btn);
         submit_btn.setOnClickListener(new View.OnClickListener() {
@@ -79,69 +80,102 @@ public class Register_user extends AppCompatActivity {
         });
 
     }
-    public void fetch_event_details(){
+    public void fetch_event_details(final int status) {
+
+        //status 0 means data is not stored in tables
+        //status 1 means data is present in tables
 
         progressDialog.setMessage("Ahaa, We are locating the coordinates for your test");
         progressDialog.show();
 
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url+"/events/"+event_name,
-                new Response.Listener<String>() {
-                    String error,error_message,passcode,society,event_date,start_time,end_time;
-                    String[] rules;
-                    JSONObject[] questions;
-                    @Override
-                    public void onResponse(String result) {
-                        try {
-                            JSONObject response=new JSONObject(result);
-                            if(response.isNull("error")){
 
-                                 //initialise start and end time here !imp
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, url + "/events/" + event_name,
+                    new Response.Listener<String>() {
+                        String error, error_message, passcode, society, event_date, start_time, end_time;
+                        String[] rules;
+                        JSONObject[] questions;
 
-                                if(!response.isNull("passcode"))
-                                passcode=response.getString("passcode");
-                                society=response.getString("society");
-                                event_date=response.getString("event_date");
-                                JSONArray question_array=response.getJSONArray("questions");
-                                JSONArray rules_array=response.getJSONArray("rules");
+                        @Override
+                        public void onResponse(String result) {
+                            try {
+                                Log.v("hello", result);
+                                JSONObject response = new JSONObject(result);
+                                if (response.isNull("error")) {
 
+                                    //initialise start and end time here !imp
+
+                                    if (!response.isNull("passcode"))
+                                        passcode = response.getString("passcode");
+                                    society = response.getString("society");
+                                    event_date = response.getString("event_date");
+                                    JSONArray question_array = response.getJSONArray("questions");
+                                    JSONArray rules_array = response.getJSONArray("rules");
+                                        rules=new String[rules_array.length()];
                                 for(int i=0;i<rules_array.length();i++){
                                     rules[i]=rules_array.getString(i);
                                 }
-
+                                    questions=new JSONObject[question_array.length()];
                                 for(int i=0;i<question_array.length();i++){
                                     questions[i]=question_array.getJSONObject(i);
                                 }
 
-                            }else{
-                                error=response.getString("error");
-                                error_message=response.getString("error_message");
-                                if(error.equals("false")){
 
-                                }else{
-                                    Toast.makeText(getBaseContext(),error_message,Toast.LENGTH_LONG).show();
+
+                                    //store it in sql table
+                                    EVENT_DETAILS ev = new EVENT_DETAILS(getBaseContext());
+                                    SQLiteDatabase db = ev.getWritableDatabase();
+
+                                    ContentValues values = new ContentValues();
+                                    values.put(EVENT_DETAILS.FeedEntry.COLUMN_NAME_EVENT_NAME, event_name);
+                                    values.put(EVENT_DETAILS.FeedEntry.COLUMN_NAME_PASSCODE, passcode);
+                                    values.put(EVENT_DETAILS.FeedEntry.COLUMN_NAME_EVENT_DATE, event_date);
+                                    //values.put(EVENT_DETAILS.FeedEntry.COLUMN_NAME_START_TIME,start_time);
+                                    //values.put(EVENT_DETAILS.FeedEntry.COLUMN_NAME_END_TIME,end_time);
+
+                                    db.insert(EVENT_DETAILS.FeedEntry.TABLE_NAME, null, values);
+
+                                    //store questions and rules in different sql tables
+                                    //pending here
+
+                                    //start activity
+
+                                    Intent st = new Intent(getApplicationContext(), Rules_timer.class);
+                                    st.putExtra("event_name", event_name);
+                                    startActivity(st);
+                                    finish();
+
+                                } else {
+                                    error = response.getString("error");
+                                    error_message = response.getString("error_message");
+                                    if (error.equals("false")) {
+
+                                    } else {
+                                        Toast.makeText(getBaseContext(), error_message, Toast.LENGTH_LONG).show();
+                                    }
                                 }
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
 
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+
+                            progressDialog.cancel();
                         }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(getBaseContext(), error.toString(), Toast.LENGTH_LONG).show();
+                            progressDialog.cancel();
+                        }
+                    });
 
+            RequestQueue requestQueue = Volley.newRequestQueue(this);
+            requestQueue.add(stringRequest);
 
-                        progressDialog.cancel();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getBaseContext(),error.toString(), Toast.LENGTH_LONG).show();
-                        progressDialog.cancel();
-                    }
-                });
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
     }
+
 
 
     public void registerUser(){
@@ -181,7 +215,7 @@ public class Register_user extends AppCompatActivity {
                             editor.apply();
 
                             //Now make a request for event details
-                            fetch_event_details();
+                            fetch_event_details(0);
 
                         }else{
                               Toast.makeText(getBaseContext(),"Something went wrong. We will be right back",Toast.LENGTH_LONG).show();
