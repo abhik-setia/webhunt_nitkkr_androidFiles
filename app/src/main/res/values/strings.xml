@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">InitialStage</string>
     <string name="title_activity_register_user">Register_user</string>
+    <string name="title_activity_rules_timer">Rules_timer</string>
 </resources>

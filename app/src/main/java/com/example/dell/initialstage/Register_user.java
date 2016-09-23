@@ -4,10 +4,12 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,6 +24,7 @@ import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -39,10 +42,14 @@ public class Register_user extends AppCompatActivity {
     SharedPreferences.Editor editor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_user);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        //check shared preferences
+
 
         user_name=(EditText)findViewById(R.id.user_name);
         user_roll_no=(EditText)findViewById(R.id.user_roll_no);
@@ -50,32 +57,96 @@ public class Register_user extends AppCompatActivity {
         user_year=(EditText)findViewById(R.id.user_year);
         user_email=(EditText)findViewById(R.id.user_email);
         user_phone_no=(EditText)findViewById(R.id.user_phone_no);
+
+        progressDialog=new ProgressDialog(this);
+        progressDialog.setCancelable(false);
+
+        event_name=getIntent().getStringExtra("event_name");
+        sharedPreferences=getSharedPreferences("register_status"+event_name, Context.MODE_PRIVATE);
+        if(!sharedPreferences.getString("user_name","").equals("")){
+            fetch_event_details();
+        }
         submit_btn=(Button)findViewById(R.id.submit_btn);
         submit_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /***perform checks on form data
+
+                 **/
+
                 registerUser();
             }
         });
-        event_name=getIntent().getStringExtra("event_name");
-        progressDialog=new ProgressDialog(this);
-        progressDialog.setCancelable(false);
-        //perform checks on form data
-
-
-
-
-
-       //submit data and save it in device too
-
-        //get response and get event info
 
     }
     public void fetch_event_details(){
 
+        progressDialog.setMessage("Ahaa, We are locating the coordinates for your test");
+        progressDialog.show();
+
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url+"/events/"+event_name,
+                new Response.Listener<String>() {
+                    String error,error_message,passcode,society,event_date,start_time,end_time;
+                    String[] rules;
+                    JSONObject[] questions;
+                    @Override
+                    public void onResponse(String result) {
+                        try {
+                            JSONObject response=new JSONObject(result);
+                            if(response.isNull("error")){
+
+                                 //initialise start and end time here !imp
+
+                                if(!response.isNull("passcode"))
+                                passcode=response.getString("passcode");
+                                society=response.getString("society");
+                                event_date=response.getString("event_date");
+                                JSONArray question_array=response.getJSONArray("questions");
+                                JSONArray rules_array=response.getJSONArray("rules");
+
+                                for(int i=0;i<rules_array.length();i++){
+                                    rules[i]=rules_array.getString(i);
+                                }
+
+                                for(int i=0;i<question_array.length();i++){
+                                    questions[i]=question_array.getJSONObject(i);
+                                }
+
+                            }else{
+                                error=response.getString("error");
+                                error_message=response.getString("error_message");
+                                if(error.equals("false")){
+
+                                }else{
+                                    Toast.makeText(getBaseContext(),error_message,Toast.LENGTH_LONG).show();
+                                }
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+                        progressDialog.cancel();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getBaseContext(),error.toString(), Toast.LENGTH_LONG).show();
+                        progressDialog.cancel();
+                    }
+                });
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
     }
+
+
     public void registerUser(){
         // Instantiate the RequestQueue.
+
         progressDialog.setMessage("Giving you superpowers.. Please wait");
         progressDialog.show();
 
@@ -107,7 +178,7 @@ public class Register_user extends AppCompatActivity {
                             editor.putString("user_year",user_year.getText().toString());
                             editor.putString("user_email",user_email.getText().toString());
                             editor.putString("user_phone_no",user_phone_no.getText().toString());
-                        editor.commit();
+                            editor.apply();
 
                             //Now make a request for event details
                             fetch_event_details();
