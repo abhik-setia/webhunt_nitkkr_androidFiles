@@ -111,16 +111,16 @@ public class Register_user extends AppCompatActivity {
                                     event_date = response.getString("event_date");
                                     JSONArray question_array = response.getJSONArray("questions");
                                     JSONArray rules_array = response.getJSONArray("rules");
-                                        rules=new String[rules_array.length()];
-                                for(int i=0;i<rules_array.length();i++){
-                                    rules[i]=rules_array.getString(i);
-                                }
+//                                     rules=new String[rules_array.length()];
+//
+//                                     for(int i=0;i<rules_array.length();i++){
+//                                         rules[i]=rules_array.getString(i);
+//                                        }
+
                                     questions=new JSONObject[question_array.length()];
                                 for(int i=0;i<question_array.length();i++){
                                     questions[i]=question_array.getJSONObject(i);
                                 }
-
-
 
                                     //store it in sql table
                                     EVENT_DETAILS ev = new EVENT_DETAILS(getBaseContext());
@@ -135,13 +135,18 @@ public class Register_user extends AppCompatActivity {
 
                                     db.insert(EVENT_DETAILS.FeedEntry.TABLE_NAME, null, values);
 
-                                    //store questions and rules in different sql tables
+                                    //store questions in different sql tables
+
+                                    //rules will be passed as intent
+
                                     //pending here
 
                                     //start activity
+                                    db.close();
 
                                     Intent st = new Intent(getApplicationContext(), Rules_timer.class);
                                     st.putExtra("event_name", event_name);
+                                    st.putExtra("rules",rules_array.toString());
                                     startActivity(st);
                                     finish();
 
