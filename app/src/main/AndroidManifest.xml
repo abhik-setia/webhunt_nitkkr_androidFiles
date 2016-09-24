@@ -35,6 +35,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.dell.initialstage.Register_user" />
         </activity>
+        <activity
+            android:name=".EventRound"
+            android:label="@string/title_activity_event_round"
+            android:parentActivityName=".Rules_timer"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.dell.initialstage.Rules_timer" />
+        </activity>
     </application>
 
 </manifest>
