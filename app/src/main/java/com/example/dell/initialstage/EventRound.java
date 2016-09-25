@@ -1,5 +1,7 @@
 package com.example.dell.initialstage;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.design.widget.TabLayout;
@@ -21,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class EventRound extends AppCompatActivity {
 
@@ -28,6 +31,7 @@ public class EventRound extends AppCompatActivity {
     String event_name,passcode, society, event_date, start_time, end_time;
     String question,question_no,answer,user_answer;
     int count_of_questions;
+    Question[] q;
     public class Question{
         String question,question_no,answer,user_answer;
 
@@ -69,7 +73,7 @@ public class EventRound extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -80,6 +84,8 @@ public class EventRound extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+
+
 
         event_name=getIntent().getStringExtra("event_name");
         //fetch event ddetails
@@ -141,7 +147,7 @@ public class EventRound extends AppCompatActivity {
                 count++;
             }while (c.moveToNext());
         }
-        Question[] q=new Question[count];
+        q=new Question[count];
         count_of_questions=count;
         int i=0;
         if(c.moveToFirst()){
@@ -157,6 +163,25 @@ public class EventRound extends AppCompatActivity {
 
     }
 
+
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setTitle("Exit Test")
+                .setMessage("Are you sure you want to exit and submit test ?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(getBaseContext(),"Thank you for taking part in this test",Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+
+                })
+                .setNegativeButton("No", null)
+                .show();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -208,9 +233,7 @@ public class EventRound extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_event_round, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+            View rootView = inflater.inflate(R.layout.question_layout, container, false);
             return rootView;
         }
     }
@@ -234,13 +257,12 @@ public class EventRound extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
             return count_of_questions;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return "section "+position;
+            return position+"";
         }
     }
 }
