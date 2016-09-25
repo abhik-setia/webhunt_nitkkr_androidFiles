@@ -115,7 +115,9 @@ public class Rules_timer extends AppCompatActivity {
                     newDialogFragment.show(getFragmentManager(),"passcode_fragment");
 
                 }else{
-                    startActivity(new Intent(getApplicationContext(),EventRound.class));
+                    Intent i=new Intent(getApplicationContext(),EventRound.class);
+                    i.putExtra("event_name",event_name);
+                    startActivity(i);
                     finish();
                 }
             }

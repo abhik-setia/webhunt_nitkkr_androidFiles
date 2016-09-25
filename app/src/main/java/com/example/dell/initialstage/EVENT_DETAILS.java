@@ -14,7 +14,7 @@ public class EVENT_DETAILS extends SQLiteOpenHelper{
 
     /* Inner class that defines the table contents */
         public static class FeedEntry implements BaseColumns {
-        public static final String TABLE_NAME = "QuestionsTable";
+        public static final String TABLE_NAME = "EventsTable";
         public static final String COLUMN_NAME_EVENT_NAME = "event_name";
         public static final String COLUMN_NAME_PASSCODE = "passcode";
         public static final String COLUMN_NAME_EVENT_DATE = "event_date";
@@ -24,7 +24,7 @@ public class EVENT_DETAILS extends SQLiteOpenHelper{
     }
         // If you change the database schema, you must increment the database version.
     public static final int DATABASE_VERSION = 1;
-    public static final String DATABASE_NAME = "QuestionsDatabase.db";
+    public static final String DATABASE_NAME = "EventsDatabase.db";
     private static final String TEXT_TYPE = " TEXT";
     private static final String COMMA_SEP = ",";
 

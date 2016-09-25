@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 /**
  * Created by Dell on 24-Sep-16.
@@ -42,10 +43,13 @@ public class EnterPasscodeDialogFragment extends DialogFragment {
                         user_entered_passcode=ed.getText().toString();
                         if(passcode.equals(user_entered_passcode)){
                             //start activity
-                            startActivity(new Intent(getActivity().getApplicationContext(),EventRound.class));
+                            Intent i=new Intent(getActivity().getApplicationContext(),EventRound.class);
+                            i.putExtra("event_name",event_name);
+                            startActivity(i);
                             getActivity().finish();
                         }else{
                             //Toast to
+                            Toast.makeText(view.getContext(),"Haha you cannot play with this :P ",Toast.LENGTH_LONG).show();
                         }
                     }
                 })

@@ -1,5 +1,7 @@
 package com.example.dell.initialstage;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -21,19 +23,42 @@ import android.widget.TextView;
 
 public class EventRound extends AppCompatActivity {
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
+
+    String event_name,passcode, society, event_date, start_time, end_time;
+    String question,question_no,answer,user_answer;
+
+    public class Question{
+        String question,question_no,answer,user_answer;
+
+        public Question(String question_no,String question,String answer){
+            this.question_no=question_no;
+            this.question=question;
+            this.answer=answer;
+        }
+
+        public void setUser_answer(String user_answer) {
+            this.user_answer = user_answer;
+        }
+
+        public String getQuestion() {
+            return question;
+        }
+
+        public String getQuestion_no() {
+            return question_no;
+        }
+
+        public String getAnswer() {
+            return answer;
+        }
+
+        public String getUser_answer() {
+            return user_answer;
+        }
+    }
+
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
     private ViewPager mViewPager;
 
     @Override
@@ -55,14 +80,78 @@ public class EventRound extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        event_name=getIntent().getStringExtra("event_name");
+        //fetch event ddetails
+        EVENT_DETAILS ev=new EVENT_DETAILS(getBaseContext());
+        SQLiteDatabase db=ev.getReadableDatabase();
+
+        String[] projection={
+                EVENT_DETAILS.FeedEntry.COLUMN_NAME_EVENT_DATE,
+                EVENT_DETAILS.FeedEntry.COLUMN_NAME_START_TIME,
+                EVENT_DETAILS.FeedEntry.COLUMN_NAME_END_TIME,
+                EVENT_DETAILS.FeedEntry.COLUMN_NAME_PASSCODE,
+                EVENT_DETAILS.FeedEntry.COLUMN_NAME_EVENT_NAME
+        };
+
+        String selection= EVENT_DETAILS.FeedEntry.COLUMN_NAME_EVENT_NAME+"=?";
+        String[] selectionArgs={event_name};
+
+        Cursor c = db.query(
+                EVENT_DETAILS.FeedEntry.TABLE_NAME,                     // The table to query
+                projection,                               // The columns to return
+                selection,                                // The columns for the WHERE clause
+                selectionArgs,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                null                                 // The sort order
+        );
+        c.moveToFirst();
+
+        event_date=c.getString(c.getColumnIndexOrThrow(EVENT_DETAILS.FeedEntry.COLUMN_NAME_EVENT_DATE));
+        start_time=c.getString(c.getColumnIndexOrThrow(EVENT_DETAILS.FeedEntry.COLUMN_NAME_START_TIME));
+        end_time=c.getString(c.getColumnIndexOrThrow(EVENT_DETAILS.FeedEntry.COLUMN_NAME_END_TIME));
+        passcode=c.getString(c.getColumnIndexOrThrow(EVENT_DETAILS.FeedEntry.COLUMN_NAME_PASSCODE));
+        db.close();
+
+//        //fetch no of questions with count query to dynamically initalise tabs
+//        QuestionsDetails qd=new QuestionsDetails(getBaseContext());
+//        db=qd.getReadableDatabase();
+//
+//        String[] projection2={
+//                QuestionsDetails.FeedEntry.COLUMN_NAME_EVENT_NAME,
+//                QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION_NO,
+//                QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION,
+//                QuestionsDetails.FeedEntry.COLUMN_NAME_ANSWER
+//        };
+//        selection= QuestionsDetails.FeedEntry.COLUMN_NAME_EVENT_NAME+"=?";
+//        String[] selectionArgs2={event_name};
+//        c = db.query(
+//                QuestionsDetails.FeedEntry.TABLE_NAME,                     // The table to query
+//                projection2,                               // The columns to return
+//                selection,                                // The columns for the WHERE clause
+//                selectionArgs2,                            // The values for the WHERE clause
+//                null,                                     // don't group the rows
+//                null,                                     // don't filter by row groups
+//                null                                 // The sort order
+//        );
+//        int count=0;
+//        if(c.moveToFirst()){
+//            do{
+//                count++;
+//            }while (c.moveToNext());
+//        }
+//        Question[] q=new Question[count];
+//        int i=0;
+//        if(c.moveToFirst()){
+//            do{
+//                question=c.getString(c.getColumnIndexOrThrow(QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION));
+//                question_no=c.getString(c.getColumnIndexOrThrow(QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION_NO));
+//                answer=c.getString(c.getColumnIndexOrThrow(QuestionsDetails.FeedEntry.COLUMN_NAME_ANSWER));
+//
+//                q[i++]=new Question(question_no,question,answer);
+//            }while (c.moveToNext());
+//        }
+
 
     }
 

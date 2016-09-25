@@ -111,16 +111,11 @@ public class Register_user extends AppCompatActivity {
                                     event_date = response.getString("event_date");
                                     JSONArray question_array = response.getJSONArray("questions");
                                     JSONArray rules_array = response.getJSONArray("rules");
-//                                     rules=new String[rules_array.length()];
-//
-//                                     for(int i=0;i<rules_array.length();i++){
-//                                         rules[i]=rules_array.getString(i);
-//                                        }
 
                                     questions=new JSONObject[question_array.length()];
-                                for(int i=0;i<question_array.length();i++){
-                                    questions[i]=question_array.getJSONObject(i);
-                                }
+                                     for(int i=0;i<question_array.length();i++){
+                                        questions[i]=question_array.getJSONObject(i);
+                                     }
 
                                     //store it in sql table
                                     EVENT_DETAILS ev = new EVENT_DETAILS(getBaseContext());
@@ -134,8 +129,28 @@ public class Register_user extends AppCompatActivity {
                                     //values.put(EVENT_DETAILS.FeedEntry.COLUMN_NAME_END_TIME,end_time);
 
                                     db.insert(EVENT_DETAILS.FeedEntry.TABLE_NAME, null, values);
-
+                                    db.close();
                                     //store questions in different sql tables
+                                    QuestionsDetails qd=new QuestionsDetails(getBaseContext());
+                                    ContentValues values1=new ContentValues();
+                                    db=qd.getWritableDatabase();
+
+                                    for(int i=0;i<questions.length;i++){
+
+                                        String question_no,question,answer;
+                                        question_no=questions[i].getString("question_no");
+                                        question=questions[i].getString("question");
+                                        answer=questions[i].getString("answer");
+
+
+                                        values1.put(QuestionsDetails.FeedEntry.COLUMN_NAME_EVENT_NAME,event_name);
+                                        values1.put(QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION_NO,question_no);
+                                        values1.put(QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION,question);
+                                        values1.put(QuestionsDetails.FeedEntry.COLUMN_NAME_ANSWER,answer);
+
+                                        db.insert(QuestionsDetails.FeedEntry.TABLE_NAME,null,values1);
+                                        values1.clear();
+                                    }
 
                                     //rules will be passed as intent
 
