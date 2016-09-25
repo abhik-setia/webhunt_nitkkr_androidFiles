@@ -23,9 +23,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,35 +38,7 @@ public class EventRound extends AppCompatActivity {
     String question,question_no,answer,user_answer;
     int count_of_questions;
     static Question[] q;
-    public class Question{
-        String question,question_no,answer,user_answer;
 
-        public Question(String question_no,String question,String answer){
-            this.question_no=question_no;
-            this.question=question;
-            this.answer=answer;
-        }
-
-        public void setUser_answer(String user_answer) {
-            this.user_answer = user_answer;
-        }
-
-        public String getQuestion() {
-            return question;
-        }
-
-        public String getQuestion_no() {
-            return question_no;
-        }
-
-        public String getAnswer() {
-            return answer;
-        }
-
-        public String getUser_answer() {
-            return user_answer;
-        }
-    }
 
 
     private ViewPager mViewPager;
@@ -163,10 +137,21 @@ public class EventRound extends AppCompatActivity {
 
     public static class QuestionFragment extends Fragment{
 
+        TextView question_textview;
+        EditText answer_edit_text;
+        private static final String DESCRIBABLE_KEY = "describable_key";
+
         public QuestionFragment(){
 
         }
 
+        public static QuestionFragment newInstance(Question q){
+            QuestionFragment qf=new QuestionFragment();
+            Bundle bundle=new Bundle();
+            bundle.putSerializable(DESCRIBABLE_KEY,q);
+            qf.setArguments(bundle);
+            return qf;
+        }
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -176,6 +161,12 @@ public class EventRound extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.question_layout, container, false);
+
+            question_textview=(TextView)rootView.findViewById(R.id.question_textview);
+            answer_edit_text=(EditText)rootView.findViewById(R.id.answer_edit_text);
+            Bundle b=getArguments();
+            Question question_object= (Question) b.getSerializable(DESCRIBABLE_KEY);
+            question_textview.setText(question_object.getQuestion_no()+". "+question_object.getQuestion());
             return rootView;
         }
     }
@@ -183,9 +174,11 @@ public class EventRound extends AppCompatActivity {
     private void setupViewPager(ViewPager viewPager){
 
         ViewPagerAdapter vw=new ViewPagerAdapter(getSupportFragmentManager());
-        for(int i=0;i<count_of_questions;i++)
-        vw.addFrag(new QuestionFragment(),i+1+"");
-        viewPager.setAdapter(vw);
+        String question,question_no,answer,user_answer;
+
+        for(int i=0;i<count_of_questions;i++) {
+            vw.addFrag(QuestionFragment.newInstance(q[i]), i + 1 + "");
+        }viewPager.setAdapter(vw);
     }
 
     class ViewPagerAdapter extends FragmentPagerAdapter{
