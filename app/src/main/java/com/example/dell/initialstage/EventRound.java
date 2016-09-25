@@ -63,6 +63,7 @@ public class EventRound extends AppCompatActivity  {
 
 
         event_name=getIntent().getStringExtra("event_name");
+        getSupportActionBar().setTitle(event_name.toUpperCase());
         //fetch event ddetails
         EVENT_DETAILS ev=new EVENT_DETAILS(getBaseContext());
         SQLiteDatabase db=ev.getReadableDatabase();
@@ -192,7 +193,7 @@ public class EventRound extends AppCompatActivity  {
         }
 
         @Override
-        public void onClick(View v) {
+        public void onClick(final View v) {
             switch (v.getId()){
                 case R.id.save_button:
                     if(answer_edit_text.getText().toString().trim().equals("")){
@@ -207,6 +208,28 @@ public class EventRound extends AppCompatActivity  {
                         Toast.makeText(v.getContext(),"Saved succesfully :) ",Toast.LENGTH_LONG).show();
                         db.close();
                     }
+
+                    break;
+                case R.id.reset_btn:
+                    new AlertDialog.Builder(v.getContext())
+                            .setIcon(android.R.drawable.ic_dialog_info)
+                            .setTitle("Reset Answer")
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                    QuestionsDetails ev=new QuestionsDetails(getActivity());
+                                    SQLiteDatabase db=ev.getWritableDatabase();
+                                    answer_edit_text.setText("");
+                                    QuestionsDetails.ResetAnswer(db,question_object,event_name);
+                                    Toast.makeText(v.getContext(),"Reset Successfully",Toast.LENGTH_SHORT).show();
+                                }
+
+                            })
+                            .setNegativeButton("No", null)
+                            .show();
+
             }
 
         }
@@ -276,16 +299,14 @@ public class EventRound extends AppCompatActivity  {
         getMenuInflater().inflate(R.menu.menu_event_round, menu);
         return true;
     }
-
+//
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_finish) {
             return true;
         }
 
