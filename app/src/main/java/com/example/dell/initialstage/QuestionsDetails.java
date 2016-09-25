@@ -1,9 +1,13 @@
 package com.example.dell.initialstage;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
+
+import static com.example.dell.initialstage.QuestionsDetails.FeedEntry.COLUMN_NAME_EVENT_NAME;
+import static com.example.dell.initialstage.QuestionsDetails.FeedEntry.TABLE_NAME;
 
 /**
  * Created by Dell on 24-Sep-16.
@@ -28,7 +32,7 @@ public class QuestionsDetails extends SQLiteOpenHelper {
     private static final String COMMA_SEP = ",";
 
     private static final String SQL_CREATE_ENTRIES =
-            "CREATE TABLE " + QuestionsDetails.FeedEntry.TABLE_NAME + " (" +
+            "CREATE TABLE " + TABLE_NAME + " (" +
                     QuestionsDetails.FeedEntry._ID + " INTEGER PRIMARY KEY," +
                     QuestionsDetails.FeedEntry.COLUMN_NAME_EVENT_NAME + TEXT_TYPE + COMMA_SEP +
                     QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION + TEXT_TYPE+ COMMA_SEP+
@@ -61,7 +65,17 @@ public class QuestionsDetails extends SQLiteOpenHelper {
         onUpgrade(db, oldVersion, newVersion);
     }
 
-    public static void UpdateAnswer(SQLiteDatabase db,String value){
+    public static void UpdateAnswer(SQLiteDatabase db, String value, Question question_object, String event_name){
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_NAME_EVENT_NAME,event_name);
+        values.put(QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION,question_object.getQuestion());
+        values.put(QuestionsDetails.FeedEntry.COLUMN_NAME_ANSWER,question_object.getAnswer());
+        values.put(QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION_NO,question_object.getQuestion_no());
+        values.put(QuestionsDetails.FeedEntry.COLUMN_NAME_USER_ANSWER,value);
+
+         db.update(TABLE_NAME, values, QuestionsDetails.FeedEntry.COLUMN_NAME_EVENT_NAME + " = ? AND "+QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION_NO
+                +" = ?",
+                new String[] {event_name,question_object.getQuestion_no()} );
 
     }
 }

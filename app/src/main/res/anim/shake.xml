@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<set xmlns:android="http://schemas.android.com/apk/res/android">
-    <translate
-        android:fromXDelta="0%"
-        android:toXDelta="5%"
-        android:duration="1000"
-        android:interpolator="@anim/cycle_7" />
-</set>
+<translate android:fromXDelta="0%"
+    android:toXDelta="3%"
+    android:duration="1000"
+    android:interpolator="@anim/cycle_7"
+    xmlns:android="http://schemas.android.com/apk/res/android" />

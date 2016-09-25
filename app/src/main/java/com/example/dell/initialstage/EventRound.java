@@ -37,7 +37,12 @@ import java.util.List;
 public class EventRound extends AppCompatActivity  {
 
 
-    String event_name,passcode, society, event_date, start_time, end_time;
+    static String event_name;
+    String passcode;
+    String society;
+    String event_date;
+    String start_time;
+    String end_time;
     String question,question_no,answer,user_answer;
     int count_of_questions;
     static Question[] q;
@@ -98,7 +103,8 @@ public class EventRound extends AppCompatActivity  {
                 QuestionsDetails.FeedEntry.COLUMN_NAME_EVENT_NAME,
                 QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION_NO,
                 QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION,
-                QuestionsDetails.FeedEntry.COLUMN_NAME_ANSWER
+                QuestionsDetails.FeedEntry.COLUMN_NAME_ANSWER,
+                QuestionsDetails.FeedEntry.COLUMN_NAME_USER_ANSWER
         };
         selection= QuestionsDetails.FeedEntry.COLUMN_NAME_EVENT_NAME+"=?";
         String[] selectionArgs2={event_name};
@@ -125,8 +131,9 @@ public class EventRound extends AppCompatActivity  {
                 question=c.getString(c.getColumnIndexOrThrow(QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION));
                 question_no=c.getString(c.getColumnIndexOrThrow(QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION_NO));
                 answer=c.getString(c.getColumnIndexOrThrow(QuestionsDetails.FeedEntry.COLUMN_NAME_ANSWER));
-
-                q[i++]=new Question(question_no,question,answer);
+                user_answer=c.getString(c.getColumnIndexOrThrow(QuestionsDetails.FeedEntry.COLUMN_NAME_USER_ANSWER));
+                q[i]=new Question(question_no,question,answer);
+                q[i++].setUser_answer(user_answer);
             }while (c.moveToNext());
         }
 
@@ -159,7 +166,7 @@ public class EventRound extends AppCompatActivity  {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
         }
-
+        Question question_object;
         @Nullable
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -168,9 +175,12 @@ public class EventRound extends AppCompatActivity  {
             question_textview=(TextView)rootView.findViewById(R.id.question_textview);
             answer_edit_text=(EditText)rootView.findViewById(R.id.answer_edit_text);
             Bundle b=getArguments();
-            Question question_object= (Question) b.getSerializable(DESCRIBABLE_KEY);
+            question_object = (Question) b.getSerializable(DESCRIBABLE_KEY);
             question_textview.setText(question_object.getQuestion_no()+". "+question_object.getQuestion());
-
+            if(question_object.getUser_answer()!=null )
+            {
+                answer_edit_text.setText(question_object.getUser_answer());
+            }
 
             reset=(Button)rootView.findViewById(R.id.reset_btn);
             save=(Button)rootView.findViewById(R.id.save_button);
@@ -185,13 +195,17 @@ public class EventRound extends AppCompatActivity  {
         public void onClick(View v) {
             switch (v.getId()){
                 case R.id.save_button:
-                    EVENT_DETAILS ev=new EVENT_DETAILS(getActivity());
-                    SQLiteDatabase db=ev.getWritableDatabase();
                     if(answer_edit_text.getText().toString().trim().equals("")){
                         Animation shake= AnimationUtils.loadAnimation(getActivity(),R.anim.shake);
-                        save.startAnimation(shake);
+                        answer_edit_text.startAnimation(shake);
+
                     }else {
-                        //QuestionsDetails.UpdateAnswer(db, answer_edit_text.getText().toString());
+                        QuestionsDetails ev=new QuestionsDetails(getActivity());
+                        SQLiteDatabase db=ev.getWritableDatabase();
+                        QuestionsDetails.UpdateAnswer(db, answer_edit_text.getText().toString(),question_object,event_name);
+                        question_object.setUser_answer(answer_edit_text.getText().toString());
+                        Toast.makeText(v.getContext(),"Saved succesfully :) ",Toast.LENGTH_LONG).show();
+                        db.close();
                     }
             }
 
