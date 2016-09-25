@@ -40,7 +40,7 @@ public class Register_user extends AppCompatActivity {
     private String event_name;
     private Button submit_btn;
     private ProgressDialog progressDialog;
-    private String url="http://192.168.1.5:3000";
+    private String url="http://45.55.126.97:3000";
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
     @Override

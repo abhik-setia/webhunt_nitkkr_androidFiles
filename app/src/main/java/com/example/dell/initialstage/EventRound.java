@@ -23,6 +23,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,14 +34,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EventRound extends AppCompatActivity {
+public class EventRound extends AppCompatActivity  {
 
 
     String event_name,passcode, society, event_date, start_time, end_time;
     String question,question_no,answer,user_answer;
     int count_of_questions;
     static Question[] q;
-
+    static Button reset,save;
 
 
     private ViewPager mViewPager;
@@ -135,7 +138,7 @@ public class EventRound extends AppCompatActivity {
 
     }
 
-    public static class QuestionFragment extends Fragment{
+    public static class QuestionFragment extends Fragment implements View.OnClickListener{
 
         TextView question_textview;
         EditText answer_edit_text;
@@ -167,7 +170,31 @@ public class EventRound extends AppCompatActivity {
             Bundle b=getArguments();
             Question question_object= (Question) b.getSerializable(DESCRIBABLE_KEY);
             question_textview.setText(question_object.getQuestion_no()+". "+question_object.getQuestion());
+
+
+            reset=(Button)rootView.findViewById(R.id.reset_btn);
+            save=(Button)rootView.findViewById(R.id.save_button);
+
+            save.setOnClickListener(this);
+            reset.setOnClickListener(this);
+
             return rootView;
+        }
+
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()){
+                case R.id.save_button:
+                    EVENT_DETAILS ev=new EVENT_DETAILS(getActivity());
+                    SQLiteDatabase db=ev.getWritableDatabase();
+                    if(answer_edit_text.getText().toString().trim().equals("")){
+                        Animation shake= AnimationUtils.loadAnimation(getActivity(),R.anim.shake);
+                        save.startAnimation(shake);
+                    }else {
+                        //QuestionsDetails.UpdateAnswer(db, answer_edit_text.getText().toString());
+                    }
+            }
+
         }
     }
 
