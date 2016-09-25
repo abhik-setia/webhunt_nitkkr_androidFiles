@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,7 +27,7 @@ public class EventRound extends AppCompatActivity {
 
     String event_name,passcode, society, event_date, start_time, end_time;
     String question,question_no,answer,user_answer;
-
+    int count_of_questions;
     public class Question{
         String question,question_no,answer,user_answer;
 
@@ -113,45 +114,46 @@ public class EventRound extends AppCompatActivity {
         passcode=c.getString(c.getColumnIndexOrThrow(EVENT_DETAILS.FeedEntry.COLUMN_NAME_PASSCODE));
         db.close();
 
-//        //fetch no of questions with count query to dynamically initalise tabs
-//        QuestionsDetails qd=new QuestionsDetails(getBaseContext());
-//        db=qd.getReadableDatabase();
-//
-//        String[] projection2={
-//                QuestionsDetails.FeedEntry.COLUMN_NAME_EVENT_NAME,
-//                QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION_NO,
-//                QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION,
-//                QuestionsDetails.FeedEntry.COLUMN_NAME_ANSWER
-//        };
-//        selection= QuestionsDetails.FeedEntry.COLUMN_NAME_EVENT_NAME+"=?";
-//        String[] selectionArgs2={event_name};
-//        c = db.query(
-//                QuestionsDetails.FeedEntry.TABLE_NAME,                     // The table to query
-//                projection2,                               // The columns to return
-//                selection,                                // The columns for the WHERE clause
-//                selectionArgs2,                            // The values for the WHERE clause
-//                null,                                     // don't group the rows
-//                null,                                     // don't filter by row groups
-//                null                                 // The sort order
-//        );
-//        int count=0;
-//        if(c.moveToFirst()){
-//            do{
-//                count++;
-//            }while (c.moveToNext());
-//        }
-//        Question[] q=new Question[count];
-//        int i=0;
-//        if(c.moveToFirst()){
-//            do{
-//                question=c.getString(c.getColumnIndexOrThrow(QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION));
-//                question_no=c.getString(c.getColumnIndexOrThrow(QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION_NO));
-//                answer=c.getString(c.getColumnIndexOrThrow(QuestionsDetails.FeedEntry.COLUMN_NAME_ANSWER));
-//
-//                q[i++]=new Question(question_no,question,answer);
-//            }while (c.moveToNext());
-//        }
+        //fetch no of questions with count query to dynamically initalise tabs
+        QuestionsDetails qd=new QuestionsDetails(getBaseContext());
+        db=qd.getReadableDatabase();
 
+        String[] projection2={
+                QuestionsDetails.FeedEntry.COLUMN_NAME_EVENT_NAME,
+                QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION_NO,
+                QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION,
+                QuestionsDetails.FeedEntry.COLUMN_NAME_ANSWER
+        };
+        selection= QuestionsDetails.FeedEntry.COLUMN_NAME_EVENT_NAME+"=?";
+        String[] selectionArgs2={event_name};
+        c = db.query(
+                QuestionsDetails.FeedEntry.TABLE_NAME,                     // The table to query
+                projection2,                               // The columns to return
+                selection,                                // The columns for the WHERE clause
+                selectionArgs2,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                null                                 // The sort order
+        );
+        int count=0;
+        if(c.moveToFirst()){
+            do{
+                count++;
+            }while (c.moveToNext());
+        }
+        Question[] q=new Question[count];
+        count_of_questions=count;
+        int i=0;
+        if(c.moveToFirst()){
+            do{
+                question=c.getString(c.getColumnIndexOrThrow(QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION));
+                question_no=c.getString(c.getColumnIndexOrThrow(QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION_NO));
+                answer=c.getString(c.getColumnIndexOrThrow(QuestionsDetails.FeedEntry.COLUMN_NAME_ANSWER));
+
+                q[i++]=new Question(question_no,question,answer);
+            }while (c.moveToNext());
+        }
+        mSectionsPagerAdapter.notifyDataSetChanged();
 
     }
 
@@ -233,20 +235,12 @@ public class EventRound extends AppCompatActivity {
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 3;
+            return count_of_questions;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return "SECTION 1";
-                case 1:
-                    return "SECTION 2";
-                case 2:
-                    return "SECTION 3";
-            }
-            return null;
+            return "section "+position;
         }
     }
 }

@@ -65,7 +65,7 @@ public class Register_user extends AppCompatActivity {
         event_name=getIntent().getStringExtra("event_name");
         sharedPreferences=getSharedPreferences("register_status"+event_name, Context.MODE_PRIVATE);
         if(!sharedPreferences.getString("user_name","").equals("")){
-            fetch_event_details(0);
+            fetch_event_details(1);
         }
         submit_btn=(Button)findViewById(R.id.submit_btn);
         submit_btn.setOnClickListener(new View.OnClickListener() {
@@ -85,9 +85,8 @@ public class Register_user extends AppCompatActivity {
         //status 0 means data is not stored in tables
         //status 1 means data is present in tables
 
-        progressDialog.setMessage("Ahaa, We are locating the coordinates for your test");
-        progressDialog.show();
-
+            progressDialog.setMessage("Ahaa, We are locating the coordinates for your test");
+            progressDialog.show();
 
 
             StringRequest stringRequest = new StringRequest(Request.Method.GET, url + "/events/" + event_name,
@@ -112,56 +111,52 @@ public class Register_user extends AppCompatActivity {
                                     JSONArray question_array = response.getJSONArray("questions");
                                     JSONArray rules_array = response.getJSONArray("rules");
 
-                                    questions=new JSONObject[question_array.length()];
-                                     for(int i=0;i<question_array.length();i++){
-                                        questions[i]=question_array.getJSONObject(i);
-                                     }
-
-                                    //store it in sql table
-                                    EVENT_DETAILS ev = new EVENT_DETAILS(getBaseContext());
-                                    SQLiteDatabase db = ev.getWritableDatabase();
-
-                                    ContentValues values = new ContentValues();
-                                    values.put(EVENT_DETAILS.FeedEntry.COLUMN_NAME_EVENT_NAME, event_name);
-                                    values.put(EVENT_DETAILS.FeedEntry.COLUMN_NAME_PASSCODE, passcode);
-                                    values.put(EVENT_DETAILS.FeedEntry.COLUMN_NAME_EVENT_DATE, event_date);
-                                    //values.put(EVENT_DETAILS.FeedEntry.COLUMN_NAME_START_TIME,start_time);
-                                    //values.put(EVENT_DETAILS.FeedEntry.COLUMN_NAME_END_TIME,end_time);
-
-                                    db.insert(EVENT_DETAILS.FeedEntry.TABLE_NAME, null, values);
-                                    db.close();
-                                    //store questions in different sql tables
-                                    QuestionsDetails qd=new QuestionsDetails(getBaseContext());
-                                    ContentValues values1=new ContentValues();
-                                    db=qd.getWritableDatabase();
-
-                                    for(int i=0;i<questions.length;i++){
-
-                                        String question_no,question,answer;
-                                        question_no=questions[i].getString("question_no");
-                                        question=questions[i].getString("question");
-                                        answer=questions[i].getString("answer");
-
-
-                                        values1.put(QuestionsDetails.FeedEntry.COLUMN_NAME_EVENT_NAME,event_name);
-                                        values1.put(QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION_NO,question_no);
-                                        values1.put(QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION,question);
-                                        values1.put(QuestionsDetails.FeedEntry.COLUMN_NAME_ANSWER,answer);
-
-                                        db.insert(QuestionsDetails.FeedEntry.TABLE_NAME,null,values1);
-                                        values1.clear();
+                                    questions = new JSONObject[question_array.length()];
+                                    for (int i = 0; i < question_array.length(); i++) {
+                                        questions[i] = question_array.getJSONObject(i);
                                     }
+                                    if(status==0) {
+                                        //store it in sql table
+                                        EVENT_DETAILS ev = new EVENT_DETAILS(getBaseContext());
+                                        SQLiteDatabase db = ev.getWritableDatabase();
 
-                                    //rules will be passed as intent
+                                        ContentValues values = new ContentValues();
+                                        values.put(EVENT_DETAILS.FeedEntry.COLUMN_NAME_EVENT_NAME, event_name);
+                                        values.put(EVENT_DETAILS.FeedEntry.COLUMN_NAME_PASSCODE, passcode);
+                                        values.put(EVENT_DETAILS.FeedEntry.COLUMN_NAME_EVENT_DATE, event_date);
+                                        values.put(EVENT_DETAILS.FeedEntry.COLUMN_NAME_START_TIME,start_time);
+                                        values.put(EVENT_DETAILS.FeedEntry.COLUMN_NAME_END_TIME,end_time);
 
-                                    //pending here
+                                        db.insert(EVENT_DETAILS.FeedEntry.TABLE_NAME, null, values);
+                                        db.close();
+                                        //store questions in different sql tables
+                                        QuestionsDetails qd = new QuestionsDetails(getBaseContext());
+                                        ContentValues values1 = new ContentValues();
+                                        db = qd.getWritableDatabase();
 
-                                    //start activity
-                                    db.close();
+                                        for (int i = 0; i < questions.length; i++) {
 
+                                            String question_no, question, answer;
+                                            question_no = questions[i].getString("question_no");
+                                            question = questions[i].getString("question");
+                                            answer = questions[i].getString("answer");
+
+
+                                            values1.put(QuestionsDetails.FeedEntry.COLUMN_NAME_EVENT_NAME, event_name);
+                                            values1.put(QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION_NO, question_no);
+                                            values1.put(QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION, question);
+                                            values1.put(QuestionsDetails.FeedEntry.COLUMN_NAME_ANSWER, answer);
+
+                                            db.insert(QuestionsDetails.FeedEntry.TABLE_NAME, null, values1);
+                                            values1.clear();
+                                        }
+
+
+                                        db.close();
+                                    }
                                     Intent st = new Intent(getApplicationContext(), Rules_timer.class);
                                     st.putExtra("event_name", event_name);
-                                    st.putExtra("rules",rules_array.toString());
+                                    st.putExtra("rules", rules_array.toString());
                                     startActivity(st);
                                     finish();
 
@@ -193,8 +188,8 @@ public class Register_user extends AppCompatActivity {
 
             RequestQueue requestQueue = Volley.newRequestQueue(this);
             requestQueue.add(stringRequest);
+        }
 
-    }
 
 
 
