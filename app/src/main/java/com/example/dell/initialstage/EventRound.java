@@ -303,7 +303,7 @@ public class EventRound extends AppCompatActivity  {
                 {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(getBaseContext(),"Thank you for taking part in this test",Toast.LENGTH_LONG).show();
+                        start_submitting_answers();
                         finish();
                     }
 
