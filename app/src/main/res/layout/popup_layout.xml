@@ -34,11 +34,11 @@ android:layout_marginTop="@dimen/activity_vertical_margin"
             android:ems="10"
             android:layout_below="@+id/dialog_window_textview"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="30dp"
             android:id="@+id/passcode_editText"
             android:hint="Passcode"
             android:fontFamily="monospace"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textAlignment="center" />
 
     </RelativeLayout>

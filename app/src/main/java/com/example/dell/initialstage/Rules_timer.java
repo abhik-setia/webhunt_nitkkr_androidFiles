@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +24,10 @@ import android.widget.TextView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.logging.Handler;
 
 public class Rules_timer extends AppCompatActivity {
 
@@ -98,10 +104,26 @@ public class Rules_timer extends AppCompatActivity {
             myTextViews[i] = rowTextView;
 
         }
-
-
-        //This button will only be visible when event is online
         play_btn=(Button)findViewById(R.id.play_btn);
+
+        final TextView timerValue;
+        timerValue = (TextView) findViewById(R.id.timer_textView);
+       // new CountDownTimer(30000, 1000) {
+//
+//            public void onTick(long millisUntilFinished) {
+//                timerValue.setText("seconds remaining: " + millisUntilFinished / 1000);
+//            }
+//
+//            public void onFinish() {
+//                timerValue.setText("");
+//                play_btn.setVisibility(View.VISIBLE);
+//            }
+//        }.start();
+
+        play_btn.setVisibility(View.VISIBLE);
+        timerValue.setVisibility(View.GONE);
+        //This button will only be visible when event is online
+
         play_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -122,6 +144,7 @@ public class Rules_timer extends AppCompatActivity {
                 }
             }
         });
+
     }
 
 

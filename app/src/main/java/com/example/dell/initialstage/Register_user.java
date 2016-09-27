@@ -40,7 +40,7 @@ public class Register_user extends AppCompatActivity {
     private String event_name;
     private Button submit_btn;
     private ProgressDialog progressDialog;
-    private String url="http://45.55.126.97:3000";
+    public static String url="http://45.55.126.97:3000";
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
     @Override
@@ -151,8 +151,13 @@ public class Register_user extends AppCompatActivity {
                                             values1.clear();
                                         }
 
-
                                         db.close();
+                                    }else{
+                                        //update data
+                                        EVENT_DETAILS ev = new EVENT_DETAILS(getBaseContext());
+                                        SQLiteDatabase db = ev.getWritableDatabase();
+                                        EVENT_DETAILS.updateEventDetails(db,event_name,event_date,passcode,start_time,end_time);
+
                                     }
                                     Intent st = new Intent(getApplicationContext(), Rules_timer.class);
                                     st.putExtra("event_name", event_name);

@@ -1,7 +1,11 @@
 package com.example.dell.initialstage;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.Nullable;
@@ -30,9 +34,23 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static com.example.dell.initialstage.Register_user.url;
 
 public class EventRound extends AppCompatActivity  {
 
@@ -46,6 +64,7 @@ public class EventRound extends AppCompatActivity  {
     String question,question_no,answer,user_answer;
     int count_of_questions;
     static Question[] q;
+    ProgressDialog progressDialog;
     static Button reset,save;
 
 
@@ -307,11 +326,109 @@ public class EventRound extends AppCompatActivity  {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_finish) {
-            return true;
+            start_submitting_answers();
         }
 
         return super.onOptionsItemSelected(item);
     }
+    int x=0;
+    public void start_submitting_answers(){
+        progressDialog=new ProgressDialog(this);
+        progressDialog.setCancelable(false);
 
+        progressDialog.setMessage("Congrats you had won 2 million dollars,just kidding :P uploading your answers...");
+        progressDialog.show();
+
+        QuestionsDetails qd=new QuestionsDetails(getBaseContext());
+        SQLiteDatabase db=qd.getReadableDatabase();
+
+        String[] projection2={
+                QuestionsDetails.FeedEntry.COLUMN_NAME_EVENT_NAME,
+                QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION_NO,
+                QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION,
+                QuestionsDetails.FeedEntry.COLUMN_NAME_ANSWER,
+                QuestionsDetails.FeedEntry.COLUMN_NAME_USER_ANSWER
+        };
+        String selection= QuestionsDetails.FeedEntry.COLUMN_NAME_EVENT_NAME+"=?";
+        String[] selectionArgs2={event_name};
+        Cursor c = db.query(
+                QuestionsDetails.FeedEntry.TABLE_NAME,                     // The table to query
+                projection2,                               // The columns to return
+                selection,                                // The columns for the WHERE clause
+                selectionArgs2,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                null                                 // The sort order
+        );
+        if(c.moveToFirst()){
+            do{
+                question=c.getString(c.getColumnIndexOrThrow(QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION));
+                question_no=c.getString(c.getColumnIndexOrThrow(QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION_NO));
+                answer=c.getString(c.getColumnIndexOrThrow(QuestionsDetails.FeedEntry.COLUMN_NAME_ANSWER));
+                user_answer=c.getString(c.getColumnIndexOrThrow(QuestionsDetails.FeedEntry.COLUMN_NAME_USER_ANSWER));
+                submit_answers(question_no,user_answer,answer);
+                Log.v("hello",question_no+" "+user_answer+" "+answer);
+            }while (c.moveToNext());
+        }
+       }
+
+
+    public void submit_answers(final String answer_no, final String answer, final String original_answer){
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url+"/events/submitTest",
+                new Response.Listener<String>() {
+                    String error,error_message,register_status;
+
+                    @Override
+                    public void onResponse(String result) {
+                        try {
+                            JSONObject response=new JSONObject(result);
+                            error=response.getString("error");
+                            error_message=response.getString("error_message");
+
+                            if(error.equals("true")){
+                                Toast.makeText(getBaseContext(),"Something went wrong",Toast.LENGTH_SHORT).show();
+                        //        progressDialog.cancel();
+
+                            }else{
+                                if(Integer.valueOf(answer_no)==count_of_questions){
+                                    progressDialog.cancel();
+                                    startActivity(new Intent(getApplicationContext(),ThankYou.class));
+                                    finish();
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getBaseContext(),error.toString(), Toast.LENGTH_LONG).show();
+                      //  progressDialog.cancel();
+                    }
+                }){
+            @Override
+            protected Map<String,String> getParams(){
+                SharedPreferences sharedPreferences=getSharedPreferences("register_status"+event_name, Context.MODE_PRIVATE);
+
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("event_name",event_name);
+                params.put("user_email",sharedPreferences.getString("user_email","").toString());
+                params.put("answer_no",answer_no);
+                params.put("answer",answer);
+                params.put("original_answer",original_answer);
+                return params;
+            }
+
+
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+
+    }
 
 }

@@ -24,9 +24,10 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_above="@+id/play_btn"
             android:layout_height="match_parent"
-            android:layout_below="@+id/Rules">
+            android:layout_below="@+id/Rules"
+
+            android:layout_above="@+id/timer_textView">
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
@@ -45,6 +46,19 @@
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_alignParentBottom="true"
             android:layout_alignRight="@+id/Rules"
-            android:layout_alignEnd="@+id/Rules" />
+            android:layout_alignEnd="@+id/Rules"
+            android:visibility="gone" />
+
+    <TextView
+        android:text="Event will be live in 30:00"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/timer_textView"
+
+        android:textSize="20sp"
+        android:textStyle="normal|bold"
+        android:textAlignment="center" />
 
 </RelativeLayout>

@@ -1,9 +1,12 @@
 package com.example.dell.initialstage;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
+
+import static com.example.dell.initialstage.QuestionsDetails.FeedEntry.TABLE_NAME;
 
 /**
  * Created by Dell on 23-Sep-16.
@@ -60,5 +63,18 @@ public class EVENT_DETAILS extends SQLiteOpenHelper{
     }
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         onUpgrade(db, oldVersion, newVersion);
+    }
+
+    public static void updateEventDetails(SQLiteDatabase db,String event_name,String event_date,
+                                          String passcode,String start_time,String end_time){
+        ContentValues values = new ContentValues();
+        values.put(FeedEntry.COLUMN_NAME_EVENT_NAME,event_name);
+        values.put(FeedEntry.COLUMN_NAME_EVENT_DATE,event_date);
+        values.put(FeedEntry.COLUMN_NAME_START_TIME,start_time);
+        values.put(FeedEntry.COLUMN_NAME_END_TIME,end_time);
+        values.put(FeedEntry.COLUMN_NAME_PASSCODE,passcode);
+
+        db.update(FeedEntry.TABLE_NAME, values, FeedEntry.COLUMN_NAME_EVENT_NAME + " = ?",
+                new String[] {event_name} );
     }
 }
