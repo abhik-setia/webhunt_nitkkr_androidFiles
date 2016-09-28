@@ -17,6 +17,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -84,7 +86,7 @@ public class Rules_timer extends AppCompatActivity {
         start_time=c.getString(c.getColumnIndexOrThrow(EVENT_DETAILS.FeedEntry.COLUMN_NAME_START_TIME));
         end_time=c.getString(c.getColumnIndexOrThrow(EVENT_DETAILS.FeedEntry.COLUMN_NAME_END_TIME));
         passcode=c.getString(c.getColumnIndexOrThrow(EVENT_DETAILS.FeedEntry.COLUMN_NAME_PASSCODE));
-
+        Animation translatebu= AnimationUtils.loadAnimation(this, R.anim.star_wars);
 
         LinearLayout myLinearLayout= (LinearLayout) findViewById(R.id.rules_linear_layout);
         final TextView[] myTextViews = new TextView[rules_array.length]; // create an empty array;
@@ -98,6 +100,8 @@ public class Rules_timer extends AppCompatActivity {
             rowTextView.setTextSize(18);
             rowTextView.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
             // add the textview to the linearlayout
+            rowTextView.setAnimation(translatebu);
+            rowTextView.startAnimation(translatebu);
             myLinearLayout.addView(rowTextView);
 
             // save a reference to the textview for later

@@ -102,9 +102,13 @@ public class Register_user extends AppCompatActivity {
                     Animation shake= AnimationUtils.loadAnimation(getBaseContext(),R.anim.shake);
                     user_phone_no.startAnimation(shake);
                 }else{
-                    if(isValidMail(user_email.getText().toString()) && isValidMobile(user_phone_no.getText().toString())){
 
-                        registerUser();
+                    if(isValidMail(user_email.getText().toString()) && isValidMobile(user_phone_no.getText().toString())){
+                        if(user_phone_no.getText().toString().length()==10){
+                            registerUser();
+                        }else{
+                            user_phone_no.setError("phone no not valid");
+                        }
 
                     }
 
