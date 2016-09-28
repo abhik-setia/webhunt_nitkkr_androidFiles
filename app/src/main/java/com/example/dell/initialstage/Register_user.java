@@ -14,6 +14,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -33,6 +35,8 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Register_user extends AppCompatActivity {
 
@@ -74,11 +78,64 @@ public class Register_user extends AppCompatActivity {
                 /***perform checks on form data
 
                  **/
+                if(user_name.getText().toString().trim().equals("")){
+                    Animation shake= AnimationUtils.loadAnimation(getBaseContext(),R.anim.shake);
+                    user_name.startAnimation(shake);
 
-                registerUser();
-            }
+                }else if(user_roll_no.getText().toString().trim().equals("")){
+                    Animation shake= AnimationUtils.loadAnimation(getBaseContext(),R.anim.shake);
+                    user_roll_no.startAnimation(shake);
+
+                } else if(user_branch.getText().toString().trim().equals("")){
+                    Animation shake= AnimationUtils.loadAnimation(getBaseContext(),R.anim.shake);
+                    user_branch.startAnimation(shake);
+
+                } else if(user_year.getText().toString().trim().equals("")){
+                    Animation shake= AnimationUtils.loadAnimation(getBaseContext(),R.anim.shake);
+                    user_year.startAnimation(shake);
+
+                }else if(user_email.getText().toString().trim().equals("")){
+                    Animation shake= AnimationUtils.loadAnimation(getBaseContext(),R.anim.shake);
+                    user_email.startAnimation(shake);
+
+                }else if(user_phone_no.getText().toString().trim().equals("")){
+                    Animation shake= AnimationUtils.loadAnimation(getBaseContext(),R.anim.shake);
+                    user_phone_no.startAnimation(shake);
+                }else{
+                    if(isValidMail(user_email.getText().toString()) && isValidMobile(user_phone_no.getText().toString())){
+
+                        registerUser();
+
+                    }
+
+                }             }
         });
 
+    }
+    private boolean isValidMail(String email2)
+    {
+        boolean check;
+        Pattern p;
+        Matcher m;
+
+        String EMAIL_STRING = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+                + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+
+        p = Pattern.compile(EMAIL_STRING);
+
+        m = p.matcher(email2);
+        check = m.matches();
+
+        if(!check)
+        {
+            user_email.setError("Not Valid Email");
+        }
+        return check;
+    }
+
+    private boolean isValidMobile(String phone)
+    {
+        return android.util.Patterns.PHONE.matcher(phone).matches();
     }
     public void fetch_event_details(final int status) {
 

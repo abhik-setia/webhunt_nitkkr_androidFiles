@@ -366,8 +366,11 @@ public class EventRound extends AppCompatActivity  {
                 question_no=c.getString(c.getColumnIndexOrThrow(QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION_NO));
                 answer=c.getString(c.getColumnIndexOrThrow(QuestionsDetails.FeedEntry.COLUMN_NAME_ANSWER));
                 user_answer=c.getString(c.getColumnIndexOrThrow(QuestionsDetails.FeedEntry.COLUMN_NAME_USER_ANSWER));
-                submit_answers(question_no,user_answer,answer);
-                Log.v("hello",question_no+" "+user_answer+" "+answer);
+                if(user_answer!=null){
+                    submit_answers(question_no,user_answer,answer);
+                }else{
+                    submit_answers(question_no,new String(""),answer);
+                }
             }while (c.moveToNext());
         }
        }
