@@ -7,8 +7,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -23,20 +25,24 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.hanks.htextview.HTextView;
+import com.hanks.htextview.HTextViewType;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.logging.Handler;
 
 public class Rules_timer extends AppCompatActivity {
 
     String event_name,passcode, society, event_date, start_time, end_time;
     String rules_json;
     String[] rules_array;
+    private Handler handler=new Handler();
     private Button play_btn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,26 +92,19 @@ public class Rules_timer extends AppCompatActivity {
         start_time=c.getString(c.getColumnIndexOrThrow(EVENT_DETAILS.FeedEntry.COLUMN_NAME_START_TIME));
         end_time=c.getString(c.getColumnIndexOrThrow(EVENT_DETAILS.FeedEntry.COLUMN_NAME_END_TIME));
         passcode=c.getString(c.getColumnIndexOrThrow(EVENT_DETAILS.FeedEntry.COLUMN_NAME_PASSCODE));
-        Animation translatebu= AnimationUtils.loadAnimation(this, R.anim.star_wars);
 
+        final HTextView[] myTextViews = new HTextView[rules_array.length]; // create an empty array;
         LinearLayout myLinearLayout= (LinearLayout) findViewById(R.id.rules_linear_layout);
-        final TextView[] myTextViews = new TextView[rules_array.length]; // create an empty array;
 
         for (int i = 0; i < rules_array.length; i++) {
 
             // create a new textview
-            final TextView rowTextView = new TextView(this);
+            final HTextView ht = new HTextView(this);
             // set some properties of rowTextView or something
-            rowTextView.setText((i+1)+" ."+rules_array[i]);
-            rowTextView.setTextSize(18);
-            rowTextView.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+            handler.postDelayed(new ViewUpdater(new String((i+1)+" ."+rules_array[i]),ht,myLinearLayout),1000+(i*1000));
             // add the textview to the linearlayout
-            rowTextView.setAnimation(translatebu);
-            rowTextView.startAnimation(translatebu);
-            myLinearLayout.addView(rowTextView);
-
             // save a reference to the textview for later
-            myTextViews[i] = rowTextView;
+            myTextViews[i] = ht;
 
         }
         play_btn=(Button)findViewById(R.id.play_btn);
@@ -150,7 +149,27 @@ public class Rules_timer extends AppCompatActivity {
         });
 
     }
+    private class ViewUpdater implements Runnable{
+        private String mString;
+        private HTextView mView;
+        private LinearLayout linearLayout;
 
+        public ViewUpdater(String string, HTextView view,LinearLayout myLinearLayout){
+            mString = string;
+            mView = view;
+            linearLayout=myLinearLayout;
+        }
+
+        @Override
+        public void run() {
+            mView.setTextSize(22);
+            mView.setTextColor(getResources().getColor(R.color.colorAccent));
+            mView.animateText(mString);
+            mView.setAnimateType(HTextViewType.TYPER);
+            mView.setGravity(View.TEXT_ALIGNMENT_TEXT_START);
+            linearLayout.addView(mView);
+        }
+    }
 
 
 }
