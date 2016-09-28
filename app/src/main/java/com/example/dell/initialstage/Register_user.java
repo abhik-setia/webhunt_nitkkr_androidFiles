@@ -190,29 +190,7 @@ public class Register_user extends AppCompatActivity {
 
                                         db.insert(EVENT_DETAILS.FeedEntry.TABLE_NAME, null, values);
                                         db.close();
-                                        //store questions in different sql tables
-                                        QuestionsDetails qd = new QuestionsDetails(getBaseContext());
-                                        ContentValues values1 = new ContentValues();
-                                        db = qd.getWritableDatabase();
 
-                                        for (int i = 0; i < questions.length; i++) {
-
-                                            String question_no, question, answer;
-                                            question_no = questions[i].getString("question_no");
-                                            question = questions[i].getString("question");
-                                            answer = questions[i].getString("answer");
-
-
-                                            values1.put(QuestionsDetails.FeedEntry.COLUMN_NAME_EVENT_NAME, event_name);
-                                            values1.put(QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION_NO, question_no);
-                                            values1.put(QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION, question);
-                                            values1.put(QuestionsDetails.FeedEntry.COLUMN_NAME_ANSWER, answer);
-
-                                            db.insert(QuestionsDetails.FeedEntry.TABLE_NAME, null, values1);
-                                            values1.clear();
-                                        }
-
-                                        db.close();
                                     }else{
                                         //update data
                                         EVENT_DETAILS ev = new EVENT_DETAILS(getBaseContext());
@@ -220,6 +198,33 @@ public class Register_user extends AppCompatActivity {
                                         EVENT_DETAILS.updateEventDetails(db,event_name,event_date,passcode,start_time,end_time);
 
                                     }
+                                    //store questions in different sql tables
+                                    SQLiteDatabase db;
+                                    QuestionsDetails qd = new QuestionsDetails(getBaseContext());
+                                    ContentValues values1 = new ContentValues();
+                                    db = qd.getWritableDatabase();
+
+                                    for (int i = 0; i < questions.length; i++) {
+
+                                        String question_no, question, answer;
+                                        question_no = questions[i].getString("question_no");
+                                        question = questions[i].getString("question");
+                                        answer = questions[i].getString("answer");
+
+
+                                        values1.put(QuestionsDetails.FeedEntry.COLUMN_NAME_EVENT_NAME, event_name);
+                                        values1.put(QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION_NO, question_no);
+                                        values1.put(QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION, question);
+                                        values1.put(QuestionsDetails.FeedEntry.COLUMN_NAME_ANSWER, answer);
+                                        if(status==0)
+                                        db.insert(QuestionsDetails.FeedEntry.TABLE_NAME, null, values1);
+                                        else {
+                                            qd.UpdateAnswer(db,null,new Question(question_no,question,answer),event_name);
+                                        }
+                                        values1.clear();
+                                    }
+
+                                    db.close();
                                     Intent st = new Intent(getApplicationContext(), Rules_timer.class);
                                     st.putExtra("event_name", event_name);
                                     st.putExtra("rules", rules_array.toString());

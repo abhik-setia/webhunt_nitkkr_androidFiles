@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/question_relative"
@@ -41,7 +40,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="20dp"
+        android:layout_margin="20dp"
         android:id="@+id/myScrollView"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
@@ -57,30 +56,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="41dp"
+
         android:id="@+id/question_textview"
         android:fontFamily="sans-serif-condensed"
         android:textSize="18sp"
         android:textColor="@android:color/black"
-        android:gravity="start"
-        android:textAlignment="textStart"
+        android:fitsSystemWindows="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
         android:textIsSelectable="true" />
         <View
             android:layout_width="fill_parent"
             android:layout_height="1dp"
             android:background="#c0c0c0"
             android:layout_margin="10dp"
-            android:layout_below="@id/question_textview"/>
+            android:layout_below="@id/question_textview"
+            android:id="@+id/view2" />
     <EditText
         android:layout_width="wrap_content"
         android:inputType="textAutoComplete|textMultiLine|textLongMessage"
         android:ems="10"
-        android:layout_below="@+id/question_textview"
-        android:layout_marginTop="52dp"
         android:id="@+id/answer_edit_text"
         android:hint="Enter your answer here,\nNot more than 40 characters :)"
         android:layout_alignParentLeft="true"
@@ -92,7 +87,9 @@
         android:fontFamily="sans-serif"
         android:padding="10dp"
         android:layout_alignParentBottom="true"
-        android:maxLength="40" />
+        android:maxLength="40"
+        android:background="@drawable/border_editext"
+        android:layout_below="@+id/view2" />
     </RelativeLayout>
     </ScrollView>
 

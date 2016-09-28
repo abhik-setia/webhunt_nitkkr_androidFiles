@@ -40,6 +40,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.hanks.htextview.HTextView;
+import com.hanks.htextview.HTextViewType;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -391,8 +393,7 @@ public class EventRound extends AppCompatActivity  {
 
                             if(error.equals("true")){
                                 Toast.makeText(getBaseContext(),"Something went wrong",Toast.LENGTH_SHORT).show();
-                        //        progressDialog.cancel();
-
+                                progressDialog.cancel();
                             }else{
                                 if(Integer.valueOf(answer_no)==count_of_questions){
                                     progressDialog.cancel();
