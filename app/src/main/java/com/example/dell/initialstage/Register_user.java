@@ -170,8 +170,8 @@ public class Register_user extends AppCompatActivity {
                                 JSONObject response = new JSONObject(result);
                                 if (response.isNull("error")) {
 
-                                    //initialise start and end time here !imp
-
+                                    start_time=response.getString("start_time");
+                                    end_time=response.getString("end_time");
                                     if (!response.isNull("passcode"))
                                         passcode = response.getString("passcode");
                                     society = response.getString("society");
@@ -194,7 +194,6 @@ public class Register_user extends AppCompatActivity {
                                         values.put(EVENT_DETAILS.FeedEntry.COLUMN_NAME_EVENT_DATE, event_date);
                                         values.put(EVENT_DETAILS.FeedEntry.COLUMN_NAME_START_TIME,start_time);
                                         values.put(EVENT_DETAILS.FeedEntry.COLUMN_NAME_END_TIME,end_time);
-
                                         db.insert(EVENT_DETAILS.FeedEntry.TABLE_NAME, null, values);
                                         db.close();
 
@@ -202,6 +201,7 @@ public class Register_user extends AppCompatActivity {
                                         //update data
                                         EVENT_DETAILS ev = new EVENT_DETAILS(getBaseContext());
                                         SQLiteDatabase db = ev.getWritableDatabase();
+                                        Log.v("hello2",event_date+" "+start_time+" "+end_time);
                                         EVENT_DETAILS.updateEventDetails(db,event_name,event_date,passcode,start_time,end_time);
 
                                     }

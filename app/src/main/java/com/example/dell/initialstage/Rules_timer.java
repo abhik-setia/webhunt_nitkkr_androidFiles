@@ -98,7 +98,6 @@ public class Rules_timer extends AppCompatActivity {
         start_time=c.getString(c.getColumnIndexOrThrow(EVENT_DETAILS.FeedEntry.COLUMN_NAME_START_TIME));
         end_time=c.getString(c.getColumnIndexOrThrow(EVENT_DETAILS.FeedEntry.COLUMN_NAME_END_TIME));
         passcode=c.getString(c.getColumnIndexOrThrow(EVENT_DETAILS.FeedEntry.COLUMN_NAME_PASSCODE));
-
         final Typewriter[] myTextViews = new Typewriter[rules_array.length]; // create an empty array;
         LinearLayout myLinearLayout= (LinearLayout) findViewById(R.id.rules_linear_layout);
 
@@ -120,30 +119,36 @@ public class Rules_timer extends AppCompatActivity {
         timerValue = (TextView) findViewById(R.id.timer_textView);
         try {
             DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH);
+
             Date date = format.parse(event_date);
 
             Calendar calendar=Calendar.getInstance();
 
             SimpleDateFormat df = new SimpleDateFormat("dd MMM yyyy");
             String formatted_date=df.format(calendar.getTime());
-
+           // Log.v("hello",date.getTime()-calendar.getTimeInMillis()+"");
            // Log.v("hello",date.getTime()+" "+calendar.getTimeInMillis());
             if((date.toGMTString().substring(0,11)+"").equals(formatted_date)){
 
-                play_btn.setVisibility(View.VISIBLE);
-                timerValue.setVisibility(View.GONE);
-                 new CountDownTimer(date.getTime()-calendar.getTimeInMillis(), 1000) {
+                play_btn.setVisibility(View.GONE);
+                timerValue.setVisibility(View.VISIBLE);
+                DateFormat format2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH);
+                Date date2 = format2.parse(start_time);
+                //remember the difference between time zone is 5:30 hours
+                int adjusted_time= (int) (date2.getTime()-calendar.getTimeInMillis()-19800000);
+                new CountDownTimer(adjusted_time, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 timerValue.setText("seconds remaining: " + millisUntilFinished / 1000);
             }
 
             public void onFinish() {
+
                 timerValue.setText("");
                 play_btn.setVisibility(View.VISIBLE);
+
             }
         }.start();
-
 
             }else{
                 play_btn.setVisibility(View.GONE);
