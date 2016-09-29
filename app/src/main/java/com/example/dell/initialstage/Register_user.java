@@ -260,39 +260,41 @@ public class Register_user extends AppCompatActivity {
                         @Override
                         public void onErrorResponse(VolleyError error) {
 
-                            if (error instanceof TimeoutError || error instanceof NoConnectionError) {
-                                Toast.makeText(getBaseContext(), "Unable to connect to server", Toast.LENGTH_LONG).show();
+//                            if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+//                                Toast.makeText(getBaseContext(), "Unable to connect to server", Toast.LENGTH_LONG).show();
+//                                progressDialog.cancel();
+//                                fetch_event_details(status);
+//                            } else if (error instanceof AuthFailureError) {
+//                                //TODO
+//                                Toast.makeText(getBaseContext(), "AuthFailure", Toast.LENGTH_LONG).show();
+//
+//                                progressDialog.cancel();
+//                                fetch_event_details(status);
+//                            } else if (error instanceof ServerError) {
+//                                Toast.makeText(getBaseContext(), "Server error", Toast.LENGTH_LONG).show();
+//                                progressDialog.cancel();
+//                                fetch_event_details(status);
+//
+//
+//                                //TODO
+//                            } else if (error instanceof NetworkError) {
+//                                //TODO
+//                                Toast.makeText(getBaseContext(), "Unable to connect to server", Toast.LENGTH_LONG).show();
+//                                progressDialog.cancel();
+//                                fetch_event_details(status);
+//
+//
+//                            } else if (error instanceof ParseError) {
+//                                //TODO
+//                                Toast.makeText(getBaseContext(), "Parse error", Toast.LENGTH_LONG).show();
+//                                progressDialog.cancel();
+//                                fetch_event_details(status);
+//
+//                            }
+                               Toast.makeText(getBaseContext(), "Unable to connect to server", Toast.LENGTH_LONG).show();
                                 progressDialog.cancel();
-                                fetch_event_details(status);
-                            } else if (error instanceof AuthFailureError) {
-                                //TODO
-                                Toast.makeText(getBaseContext(), "AuthFailure", Toast.LENGTH_LONG).show();
-
-                                progressDialog.cancel();
-                                fetch_event_details(status);
-                            } else if (error instanceof ServerError) {
-                                Toast.makeText(getBaseContext(), "Server error", Toast.LENGTH_LONG).show();
-                                progressDialog.cancel();
-                                fetch_event_details(status);
-
-
-                                //TODO
-                            } else if (error instanceof NetworkError) {
-                                //TODO
-                                Toast.makeText(getBaseContext(), "Unable to connect to server", Toast.LENGTH_LONG).show();
-                                progressDialog.cancel();
-                                fetch_event_details(status);
-
-
-                            } else if (error instanceof ParseError) {
-                                //TODO
-                                Toast.makeText(getBaseContext(), "Parse error", Toast.LENGTH_LONG).show();
-                                progressDialog.cancel();
-
-                                fetch_event_details(status);
-
-                            }
-
+                                startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                                finish();
                         }
                     });
 

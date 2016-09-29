@@ -8,10 +8,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Typeface;
+import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -20,6 +23,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -52,6 +56,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static android.R.attr.duration;
 import static com.example.dell.initialstage.Register_user.url;
 
 public class EventRound extends AppCompatActivity  {
@@ -69,7 +74,7 @@ public class EventRound extends AppCompatActivity  {
     ProgressDialog progressDialog;
     static Button reset,save;
     static TabLayout tabLayout;
-
+    TextView timerText;
     private ViewPager mViewPager;
 
     @Override
@@ -116,6 +121,7 @@ public class EventRound extends AppCompatActivity  {
         end_time=c.getString(c.getColumnIndexOrThrow(EVENT_DETAILS.FeedEntry.COLUMN_NAME_END_TIME));
         passcode=c.getString(c.getColumnIndexOrThrow(EVENT_DETAILS.FeedEntry.COLUMN_NAME_PASSCODE));
         db.close();
+
 
         //fetch no of questions with count query to dynamically initalise tabs
         QuestionsDetails qd=new QuestionsDetails(getBaseContext());
@@ -326,9 +332,60 @@ public class EventRound extends AppCompatActivity  {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_event_round, menu);
+        MenuItem timerItem = menu.findItem(R.id.break_timer);
+        timerText= (TextView) MenuItemCompat.getActionView(timerItem);
+        timerText.setTypeface(Typeface.MONOSPACE,Typeface.BOLD);
+        startTimer(30000,1000);
         return true;
     }
-//
+private void startTimer(long duration, long interval) {
+
+    CountDownTimer timer = new CountDownTimer(duration, interval) {
+
+        @Override
+        public void onFinish() {
+            start_submitting_answers();
+        }
+
+        @Override
+        public void onTick(long millisecondsLeft) {
+            int secondsLeft = (int) Math.round((millisecondsLeft / (double) 1000));
+            timerText.setText(secondsToString(secondsLeft));
+        }
+    };
+
+    timer.start();
+}
+    private String secondsToString(int improperSeconds) {
+
+        //Seconds must be fewer than are in a day
+
+        Time secConverter = new Time();
+
+        secConverter.hour = 0;
+        secConverter.minute = 0;
+        secConverter.second = 0;
+
+        secConverter.second = improperSeconds;
+        secConverter.normalize(true);
+
+        String hours = String.valueOf(secConverter.hour);
+        String minutes = String.valueOf(secConverter.minute);
+        String seconds = String.valueOf(secConverter.second);
+
+        if (seconds.length() < 2) {
+            seconds = "0" + seconds;
+        }
+        if (minutes.length() < 2) {
+            minutes = "0" + minutes;
+        }
+        if (hours.length() < 2) {
+            hours = "0" + hours;
+        }
+
+        String timeString = hours + ":" + minutes + ":" + seconds;
+        return timeString;
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 

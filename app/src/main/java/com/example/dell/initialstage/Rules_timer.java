@@ -17,6 +17,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.format.Time;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -122,7 +123,7 @@ public class Rules_timer extends AppCompatActivity {
 
             Date date = format.parse(event_date);
 
-            Calendar calendar=Calendar.getInstance();
+            final Calendar calendar=Calendar.getInstance();
 
             SimpleDateFormat df = new SimpleDateFormat("dd MMM yyyy");
             String formatted_date=df.format(calendar.getTime());
@@ -130,26 +131,47 @@ public class Rules_timer extends AppCompatActivity {
            // Log.v("hello",date.getTime()+" "+calendar.getTimeInMillis());
             if((date.toGMTString().substring(0,11)+"").equals(formatted_date)){
 
+
                 play_btn.setVisibility(View.GONE);
                 timerValue.setVisibility(View.VISIBLE);
-                DateFormat format2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH);
-                Date date2 = format2.parse(start_time);
-                //remember the difference between time zone is 5:30 hours
-                int adjusted_time= (int) (date2.getTime()-calendar.getTimeInMillis()-19800000);
-                new CountDownTimer(adjusted_time, 1000) {
+                Date date2 = format.parse(start_time);
+                final Date end_date=format.parse(end_time);
 
-            public void onTick(long millisUntilFinished) {
-                timerValue.setText("seconds remaining: " + millisUntilFinished / 1000);
-            }
+                if((int)(end_date.getTime()-calendar.getTimeInMillis()-19800000)<=0){
+                    play_btn.setVisibility(View.GONE);
+                    timerValue.setVisibility(View.VISIBLE);
+                    timerValue.setText("Event has ended");
+                }else {
+                    //remember the difference between time zone is 5:30 hours
+                    int adjusted_time = (int) (date2.getTime() - calendar.getTimeInMillis() - 19800000);
 
-            public void onFinish() {
+                    new CountDownTimer(adjusted_time, 1000) {
 
-                timerValue.setText("");
-                play_btn.setVisibility(View.VISIBLE);
+                        public void onTick(long millisUntilFinished) {
+                            int seconds_left= (int) (millisUntilFinished / 1000);
+                            timerValue.setText("Event will begin in: " + secondsToString(seconds_left));
+                        }
 
-            }
-        }.start();
+                        public void onFinish() {
 
+                            timerValue.setText("");
+                            play_btn.setVisibility(View.VISIBLE);
+                            int adjusted_time = (int) (end_date.getTime() - calendar.getTimeInMillis() - 19800000);
+                            new CountDownTimer(adjusted_time,1000){
+                                @Override
+                                public void onTick(long millisUntilFinished) {
+
+                                }
+                                @Override
+                                public void onFinish() {
+                                    play_btn.setVisibility(View.GONE);
+                                    timerValue.setVisibility(View.VISIBLE);
+                                    timerValue.setText("Event has ended");
+                                }
+                            };
+                        }
+                    }.start();
+                }
             }else{
                 play_btn.setVisibility(View.GONE);
                 timerValue.setVisibility(View.VISIBLE);
@@ -183,6 +205,36 @@ public class Rules_timer extends AppCompatActivity {
             }
         });
 
+    }
+    private String secondsToString(int improperSeconds) {
+
+        //Seconds must be fewer than are in a day
+
+        Time secConverter = new Time();
+
+        secConverter.hour = 0;
+        secConverter.minute = 0;
+        secConverter.second = 0;
+
+        secConverter.second = improperSeconds;
+        secConverter.normalize(true);
+
+        String hours = String.valueOf(secConverter.hour);
+        String minutes = String.valueOf(secConverter.minute);
+        String seconds = String.valueOf(secConverter.second);
+
+        if (seconds.length() < 2) {
+            seconds = "0" + seconds;
+        }
+        if (minutes.length() < 2) {
+            minutes = "0" + minutes;
+        }
+        if (hours.length() < 2) {
+            hours = "0" + hours;
+        }
+
+        String timeString = hours + ":" + minutes + ":" + seconds;
+        return timeString;
     }
     private class ViewUpdater implements Runnable{
         private String mString;
