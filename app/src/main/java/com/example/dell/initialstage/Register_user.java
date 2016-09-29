@@ -20,9 +20,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.JsonRequest;
@@ -252,8 +259,37 @@ public class Register_user extends AppCompatActivity {
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            Toast.makeText(getBaseContext(), error.toString(), Toast.LENGTH_LONG).show();
-                            progressDialog.cancel();
+
+                            if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                                Toast.makeText(getBaseContext(), "Unable to connect to server", Toast.LENGTH_LONG).show();
+                                fetch_event_details(status);
+                                progressDialog.cancel();
+                            } else if (error instanceof AuthFailureError) {
+                                //TODO
+                                Toast.makeText(getBaseContext(), "AuthFailure", Toast.LENGTH_LONG).show();
+                                fetch_event_details(status);
+                                progressDialog.cancel();
+
+                            } else if (error instanceof ServerError) {
+                                Toast.makeText(getBaseContext(), "Server error", Toast.LENGTH_LONG).show();
+                                fetch_event_details(status);
+                                progressDialog.cancel();
+
+                                //TODO
+                            } else if (error instanceof NetworkError) {
+                                //TODO
+                                Toast.makeText(getBaseContext(), "Unable to connect to server", Toast.LENGTH_LONG).show();
+                                fetch_event_details(status);
+                                progressDialog.cancel();
+
+                            } else if (error instanceof ParseError) {
+                                //TODO
+                                Toast.makeText(getBaseContext(), "Parse error", Toast.LENGTH_LONG).show();
+                                fetch_event_details(status);
+                                progressDialog.cancel();
+
+                            }
+
                         }
                     });
 
@@ -315,7 +351,7 @@ public class Register_user extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getBaseContext(),error.toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getBaseContext(),"Unable to connect to server please submit again", Toast.LENGTH_LONG).show();
                         progressDialog.cancel();
                     }
                 }){

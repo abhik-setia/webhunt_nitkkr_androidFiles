@@ -311,7 +311,7 @@ public class EventRound extends AppCompatActivity  {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         start_submitting_answers();
-                        
+
                     }
 
                 })
@@ -397,7 +397,7 @@ public class EventRound extends AppCompatActivity  {
                             error_message=response.getString("error_message");
 
                             if(error.equals("true")){
-                                Toast.makeText(getBaseContext(),"Something went wrong",Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getBaseContext(),"Something went wrong,Trying to submit again",Toast.LENGTH_SHORT).show();
                                 start_submitting_answers();
                                 progressDialog.cancel();
                             }else{
