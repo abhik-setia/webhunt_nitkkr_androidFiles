@@ -199,6 +199,11 @@ public class EventRound extends AppCompatActivity  {
             Bundle b=getArguments();
             question_object = (Question) b.getSerializable(DESCRIBABLE_KEY);
             question_textview.setText(question_object.getQuestion_no()+". "+question_object.getQuestion());
+
+            Animation fadeinanimation=AnimationUtils.loadAnimation(getContext(),R.anim.fade_in_animation);
+            question_textview.startAnimation(fadeinanimation);
+            answer_edit_text.startAnimation(fadeinanimation);
+
             if(question_object.getUser_answer()!=null )
             {
                 answer_edit_text.setText(question_object.getUser_answer());
@@ -306,7 +311,7 @@ public class EventRound extends AppCompatActivity  {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         start_submitting_answers();
-                        finish();
+                        
                     }
 
                 })
@@ -393,6 +398,7 @@ public class EventRound extends AppCompatActivity  {
 
                             if(error.equals("true")){
                                 Toast.makeText(getBaseContext(),"Something went wrong",Toast.LENGTH_SHORT).show();
+                                start_submitting_answers();
                                 progressDialog.cancel();
                             }else{
                                 if(Integer.valueOf(answer_no)==count_of_questions){

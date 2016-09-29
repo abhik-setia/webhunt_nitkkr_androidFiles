@@ -38,7 +38,7 @@
         <Button
             android:text="WEBHUNT"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:layout_marginTop="26dp"
             android:id="@+id/webhunt_event_btn"
             android:elevation="7dp"
@@ -47,7 +47,10 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_alignParentRight="true"
+            android:textColor="@color/textcolorWhite"
+            android:textSize="20sp"
             android:layout_alignParentEnd="true"
+            android:background="@drawable/button_shape"
             android:paddingLeft="20dp" />
 
     </RelativeLayout>
