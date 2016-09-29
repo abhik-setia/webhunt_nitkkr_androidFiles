@@ -226,7 +226,7 @@ public class Register_user extends AppCompatActivity {
                                         if(status==0)
                                         db.insert(QuestionsDetails.FeedEntry.TABLE_NAME, null, values1);
                                         else {
-                                            qd.UpdateAnswer(db,null,new Question(question_no,question,answer),event_name);
+                                            qd.UpdateQuestions(db,new Question(question_no,question,answer),event_name);
                                         }
                                         values1.clear();
                                     }
@@ -262,31 +262,34 @@ public class Register_user extends AppCompatActivity {
 
                             if (error instanceof TimeoutError || error instanceof NoConnectionError) {
                                 Toast.makeText(getBaseContext(), "Unable to connect to server", Toast.LENGTH_LONG).show();
-                                fetch_event_details(status);
                                 progressDialog.cancel();
+                                fetch_event_details(status);
                             } else if (error instanceof AuthFailureError) {
                                 //TODO
                                 Toast.makeText(getBaseContext(), "AuthFailure", Toast.LENGTH_LONG).show();
-                                fetch_event_details(status);
-                                progressDialog.cancel();
 
+                                progressDialog.cancel();
+                                fetch_event_details(status);
                             } else if (error instanceof ServerError) {
                                 Toast.makeText(getBaseContext(), "Server error", Toast.LENGTH_LONG).show();
-                                fetch_event_details(status);
                                 progressDialog.cancel();
+                                fetch_event_details(status);
+
 
                                 //TODO
                             } else if (error instanceof NetworkError) {
                                 //TODO
                                 Toast.makeText(getBaseContext(), "Unable to connect to server", Toast.LENGTH_LONG).show();
-                                fetch_event_details(status);
                                 progressDialog.cancel();
+                                fetch_event_details(status);
+
 
                             } else if (error instanceof ParseError) {
                                 //TODO
                                 Toast.makeText(getBaseContext(), "Parse error", Toast.LENGTH_LONG).show();
-                                fetch_event_details(status);
                                 progressDialog.cancel();
+
+                                fetch_event_details(status);
 
                             }
 

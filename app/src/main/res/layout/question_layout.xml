@@ -51,7 +51,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-    <TextView
+    <com.example.dell.initialstage.Typewriter
         android:text="1. Question goes here"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

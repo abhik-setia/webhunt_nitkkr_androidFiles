@@ -79,6 +79,18 @@ public class QuestionsDetails extends SQLiteOpenHelper {
 
     }
 
+    public static void UpdateQuestions(SQLiteDatabase db,Question question_object, String event_name){
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_NAME_EVENT_NAME,event_name);
+        values.put(QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION,question_object.getQuestion());
+        values.put(QuestionsDetails.FeedEntry.COLUMN_NAME_ANSWER,question_object.getAnswer());
+        values.put(QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION_NO,question_object.getQuestion_no());
+
+        db.update(TABLE_NAME, values, QuestionsDetails.FeedEntry.COLUMN_NAME_EVENT_NAME + " = ? AND "+QuestionsDetails.FeedEntry.COLUMN_NAME_QUESTION_NO
+                        +" = ?",
+                new String[] {event_name,question_object.getQuestion_no()} );
+    }
+
     public static void ResetAnswer(SQLiteDatabase db,Question question_object, String event_name){
         ContentValues values = new ContentValues();
         values.put(COLUMN_NAME_EVENT_NAME,event_name);

@@ -35,7 +35,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class Rules_timer extends AppCompatActivity {
 
@@ -103,33 +107,54 @@ public class Rules_timer extends AppCompatActivity {
             // create a new textview
             final Typewriter ht = new Typewriter(this);
             // set some properties of rowTextView or something
-            handler.postDelayed(new ViewUpdater(new String((i+1)+" ."+rules_array[i]),ht,myLinearLayout),2000+(i*1000));
+            handler.postDelayed(new ViewUpdater(new String((i+1)+" ."+rules_array[i]),ht,myLinearLayout),(i*2000));
             // add the textview to the linearlayout
             // save a reference to the textview for later
             myTextViews[i] = ht;
 
         }
 
-
-
         play_btn=(Button)findViewById(R.id.play_btn);
 
         final TextView timerValue;
         timerValue = (TextView) findViewById(R.id.timer_textView);
-       // new CountDownTimer(30000, 1000) {
-//
-//            public void onTick(long millisUntilFinished) {
-//                timerValue.setText("seconds remaining: " + millisUntilFinished / 1000);
-//            }
-//
-//            public void onFinish() {
-//                timerValue.setText("");
-//                play_btn.setVisibility(View.VISIBLE);
-//            }
-//        }.start();
+        try {
+            DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH);
+            Date date = format.parse(event_date);
 
-        play_btn.setVisibility(View.VISIBLE);
-        timerValue.setVisibility(View.GONE);
+            Calendar calendar=Calendar.getInstance();
+
+            SimpleDateFormat df = new SimpleDateFormat("dd MMM yyyy");
+            String formatted_date=df.format(calendar.getTime());
+
+           // Log.v("hello",date.getTime()+" "+calendar.getTimeInMillis());
+            if((date.toGMTString().substring(0,11)+"").equals(formatted_date)){
+
+                play_btn.setVisibility(View.VISIBLE);
+                timerValue.setVisibility(View.GONE);
+                 new CountDownTimer(date.getTime()-calendar.getTimeInMillis(), 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                timerValue.setText("seconds remaining: " + millisUntilFinished / 1000);
+            }
+
+            public void onFinish() {
+                timerValue.setText("");
+                play_btn.setVisibility(View.VISIBLE);
+            }
+        }.start();
+
+
+            }else{
+                play_btn.setVisibility(View.GONE);
+                timerValue.setVisibility(View.VISIBLE);
+                timerValue.setText("Event will start on "+(date.toGMTString().substring(0,11)+""));
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
         //This button will only be visible when event is online
 
         play_btn.setOnClickListener(new View.OnClickListener() {
@@ -177,43 +202,5 @@ public class Rules_timer extends AppCompatActivity {
         }
 
     }
-     class Typewriter extends TextView {
 
-        private CharSequence mText;
-        private int mIndex;
-        private long mDelay = 500; //Default 500ms delay
-
-
-        public Typewriter(Context context) {
-            super(context);
-        }
-
-        public Typewriter(Context context, AttributeSet attrs) {
-            super(context, attrs);
-        }
-
-        private Handler mHandler = new Handler();
-        private Runnable characterAdder = new Runnable() {
-            @Override
-            public void run() {
-                setText(mText.subSequence(0, mIndex++));
-                if(mIndex <= mText.length()) {
-                    mHandler.postDelayed(characterAdder, mDelay);
-                }
-            }
-        };
-
-        public void animateText(CharSequence text) {
-            mText = text;
-            mIndex = 0;
-
-            setText("");
-            mHandler.removeCallbacks(characterAdder);
-            mHandler.postDelayed(characterAdder, mDelay);
-        }
-
-        public void setCharacterDelay(long millis) {
-            mDelay = millis;
-        }
-    }
 }

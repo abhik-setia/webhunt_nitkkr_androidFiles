@@ -68,7 +68,7 @@ public class EventRound extends AppCompatActivity  {
     static Question[] q;
     ProgressDialog progressDialog;
     static Button reset,save;
-
+    static TabLayout tabLayout;
 
     private ViewPager mViewPager;
 
@@ -162,14 +162,14 @@ public class EventRound extends AppCompatActivity  {
         mViewPager = (ViewPager) findViewById(R.id.container);
         setupViewPager(mViewPager);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+         tabLayout= (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
     }
 
     public static class QuestionFragment extends Fragment implements View.OnClickListener{
 
-        TextView question_textview;
+        Typewriter question_textview;
         EditText answer_edit_text;
         private static final String DESCRIBABLE_KEY = "describable_key";
 
@@ -194,12 +194,12 @@ public class EventRound extends AppCompatActivity  {
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.question_layout, container, false);
 
-            question_textview=(TextView)rootView.findViewById(R.id.question_textview);
+            question_textview=(Typewriter)rootView.findViewById(R.id.question_textview);
             answer_edit_text=(EditText)rootView.findViewById(R.id.answer_edit_text);
             Bundle b=getArguments();
             question_object = (Question) b.getSerializable(DESCRIBABLE_KEY);
-            question_textview.setText(question_object.getQuestion_no()+". "+question_object.getQuestion());
-
+            question_textview.animateText(question_object.getQuestion_no()+". "+question_object.getQuestion());
+            question_textview.setCharacterDelay(50);
             Animation fadeinanimation=AnimationUtils.loadAnimation(getContext(),R.anim.fade_in_animation);
             question_textview.startAnimation(fadeinanimation);
             answer_edit_text.startAnimation(fadeinanimation);
@@ -233,6 +233,9 @@ public class EventRound extends AppCompatActivity  {
                         question_object.setUser_answer(answer_edit_text.getText().toString());
                         Toast.makeText(v.getContext(),"Saved succesfully :) ",Toast.LENGTH_LONG).show();
                         db.close();
+
+                        //tabLayout.getTabAt(Integer.parseInt(question_object.getQuestion_no())-1);
+                        //tabLayout.getTabAt(tabLayout.getSelectedTabPosition()).setIcon(v.getResources().getDrawable(R.drawable.fire);
                     }
 
                     break;
@@ -416,6 +419,7 @@ public class EventRound extends AppCompatActivity  {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        submit_answers(answer_no,answer,original_answer);
                         Toast.makeText(getBaseContext(),error.toString(), Toast.LENGTH_LONG).show();
                       //  progressDialog.cancel();
                     }
