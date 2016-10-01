@@ -12,6 +12,8 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -45,6 +47,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -148,47 +151,54 @@ public class Rules_timer extends AppCompatActivity {
                 int l=formatted_date.length();
                 formatted_date=formatted_date.substring(1,l).trim();
             }
+            Date date2 = format.parse(start_time);
 
-           // Log.v("hello",date.toGMTString().substring(0,11).trim()+" "+formatted_date);
+            // Log.v("hello",date.toGMTString().substring(0,11).trim()+" "+formatted_date);
 
-            if((adjustedDate.toGMTString().substring(0,11).trim()+"").equals(formatted_date)){
+            if(calendar.getTimeInMillis()-date2.getTime()>0){
+                play_btn.setVisibility(View.VISIBLE);
+                timerValue.setVisibility(View.GONE);
+
+            }else {
+
+                if ((adjustedDate.toGMTString().substring(0, 11).trim() + "").equals(formatted_date)) {
 
 
-                play_btn.setVisibility(View.GONE);
-                timerValue.setVisibility(View.VISIBLE);
-                Date date2 = format.parse(start_time);
-                final Date end_date=format.parse(end_time);
-
-                Log.v("hello",end_date.getTime()+" "+date2.getTime()+" "+calendar.getTimeInMillis());
-
-                if((end_date.getTime()-calendar.getTimeInMillis())<0){
                     play_btn.setVisibility(View.GONE);
                     timerValue.setVisibility(View.VISIBLE);
-                    timerValue.setText("Event has ended");
-                }else {
-                    //remember the difference between time zone is 5:30 hours
-                    int adjusted_time = (int) (date2.getTime() - calendar.getTimeInMillis());
+                    final Date end_date = format.parse(end_time);
 
-                    new CountDownTimer(adjusted_time, 1000) {
+                    //Log.v("hello",end_date.getTime()+" "+date2.getTime()+" "+calendar.getTimeInMillis());
 
-                        public void onTick(long millisUntilFinished) {
-                            int seconds_left= (int) (millisUntilFinished / 1000);
-                            timerValue.setText("Event will begin in: " + secondsToString(seconds_left));
-                        }
+                    if ((end_date.getTime() - calendar.getTimeInMillis()) < 0) {
+                        play_btn.setVisibility(View.GONE);
+                        timerValue.setVisibility(View.VISIBLE);
+                        timerValue.setText("Event has ended");
+                    } else {
+                        //remember the difference between time zone is 5:30 hours
+                        int adjusted_time = (int) (date2.getTime() - calendar.getTimeInMillis());
 
-                        public void onFinish() {
+                        new CountDownTimer(adjusted_time, 1000) {
 
-                            timerValue.setText("");
-                            play_btn.setVisibility(View.VISIBLE);
-                            int adjusted_time = (int) (end_date.getTime() - calendar.getTimeInMillis());
+                            public void onTick(long millisUntilFinished) {
+                                int seconds_left = (int) (millisUntilFinished / 1000);
+                                timerValue.setText("Event will begin in: " + secondsToString(seconds_left));
+                            }
 
-                        }
-                    }.start();
+                            public void onFinish() {
+
+                                timerValue.setText("");
+                                play_btn.setVisibility(View.VISIBLE);
+                                int adjusted_time = (int) (end_date.getTime() - calendar.getTimeInMillis());
+
+                            }
+                        }.start();
+                    }
+                } else {
+                    play_btn.setVisibility(View.GONE);
+                    timerValue.setVisibility(View.VISIBLE);
+                    timerValue.setText("Event will start on " + (adjustedDate.toGMTString().substring(0, 11) + ""));
                 }
-            }else{
-                play_btn.setVisibility(View.GONE);
-                timerValue.setVisibility(View.VISIBLE);
-                timerValue.setText("Event will start on "+(adjustedDate.toGMTString().substring(0,11)+""));
             }
         } catch (ParseException e) {
             e.printStackTrace();
@@ -252,10 +262,15 @@ public class Rules_timer extends AppCompatActivity {
                                     DialogFragment newDialogFragment=new EnterPasscodeDialogFragment();
                                     newDialogFragment.setArguments(b);
                                     newDialogFragment.show(getFragmentManager(),"passcode_fragment");
-                                } else {
+                                } else if(timer_value.equals("-2")){
+                                    Toast.makeText(getBaseContext(), "Thats Illegal you know we are watching you", Toast.LENGTH_LONG).show();
+                                    progressDialog.cancel();
+                                }
+                                else {
                                     Toast.makeText(getBaseContext(), "Your time slot has ended,Thanks", Toast.LENGTH_LONG).show();
                                     progressDialog.cancel();
 
+                                    ask_user_again();
                                 }
 //                            }
                             } catch (JSONException e) {
@@ -288,6 +303,38 @@ public class Rules_timer extends AppCompatActivity {
         requestQueue.add(stringRequest);
 
 
+    }
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+    public void ask_user_again(){
+        new AlertDialog.Builder(Rules_timer.this)
+                .setIcon(android.R.drawable.ic_dialog_info)
+                .setTitle("We lost you buddy. Network failure,Submit again ?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        if(isNetworkAvailable())
+                        {
+                            Intent i=new Intent(getApplicationContext(),EventRound.class);
+                            i.putExtra("event_name",event_name);
+                            i.putExtra("timer_value","0");
+                            startActivity(i);
+                            finish();
+
+                        }
+                        else{
+                            Toast.makeText(Rules_timer.this,"Check your internet connection please",Toast.LENGTH_LONG).show();
+                        }
+                    }
+                })
+                .setNegativeButton("No", null)
+                .show();
     }
     private String secondsToString(int improperSeconds) {
 

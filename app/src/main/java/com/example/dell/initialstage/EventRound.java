@@ -9,6 +9,8 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -51,11 +53,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static android.R.attr.dialogIcon;
 import static android.R.attr.duration;
 import static com.example.dell.initialstage.Register_user.url;
 
@@ -316,12 +322,17 @@ public class EventRound extends AppCompatActivity  {
                 {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        isSubmit=0;
                         start_submitting_answers();
-
                     }
 
                 })
-                .setNegativeButton("No", null)
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        isSubmit=0;
+                    }
+                })
                 .show();
     }
 
@@ -447,6 +458,7 @@ private void startTimer(long duration, long interval) {
         }
        }
 
+    private static int isSubmit=0;
 
     public void submit_answers(final String answer_no, final String answer, final String original_answer){
 
@@ -462,9 +474,10 @@ private void startTimer(long duration, long interval) {
                             error_message=response.getString("error_message");
 
                             if(error.equals("true")){
-                                Toast.makeText(getBaseContext(),"Something went wrong,Trying to submit again",Toast.LENGTH_SHORT).show();
-                                start_submitting_answers();
+                                Toast.makeText(getBaseContext(),"Something went wrong on server side.",Toast.LENGTH_SHORT).show();
+                                //ask_user_again();
                                 progressDialog.cancel();
+
                             }else{
                                 if(Integer.valueOf(answer_no)==count_of_questions){
                                     progressDialog.cancel();
@@ -481,9 +494,12 @@ private void startTimer(long duration, long interval) {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        submit_answers(answer_no,answer,original_answer);
-                        Toast.makeText(getBaseContext(),error.toString(), Toast.LENGTH_LONG).show();
-                      //  progressDialog.cancel();
+                        progressDialog.cancel();
+                        //Toast.makeText(getBaseContext(),error.toString(), Toast.LENGTH_LONG).show();
+                        isSubmit++;
+                        if(isSubmit==1)
+                        ask_user_again();
+
                     }
                 }){
             @Override
@@ -506,5 +522,60 @@ private void startTimer(long duration, long interval) {
         requestQueue.add(stringRequest);
 
     }
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+    private void setMobileDataEnabled(Context context, boolean enabled) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        final ConnectivityManager conman = (ConnectivityManager)  context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        final Class conmanClass = Class.forName(conman.getClass().getName());
+        final Field connectivityManagerField = conmanClass.getDeclaredField("mService");
+        connectivityManagerField.setAccessible(true);
+        final Object connectivityManager = connectivityManagerField.get(conman);
+        final Class connectivityManagerClass =  Class.forName(connectivityManager.getClass().getName());
+        final Method setMobileDataEnabledMethod = connectivityManagerClass.getDeclaredMethod("setMobileDataEnabled", Boolean.TYPE);
+        setMobileDataEnabledMethod.setAccessible(true);
 
+        setMobileDataEnabledMethod.invoke(connectivityManager, enabled);
+    }
+    public void ask_user_again(){
+        new AlertDialog.Builder(EventRound.this)
+                .setIcon(android.R.drawable.ic_dialog_info)
+                .setTitle("We lost you buddy. Network failure,Submit again ?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        isSubmit=0;
+                        if(isNetworkAvailable())
+                        start_submitting_answers();
+                        else{
+                            try {
+                                setMobileDataEnabled(EventRound.this,false);
+                            } catch (ClassNotFoundException e) {
+                                e.printStackTrace();
+                            } catch (NoSuchFieldException e) {
+                                e.printStackTrace();
+                            } catch (IllegalAccessException e) {
+                                e.printStackTrace();
+                            } catch (NoSuchMethodException e) {
+                                e.printStackTrace();
+                            } catch (InvocationTargetException e) {
+                                e.printStackTrace();
+                            }
+                            Toast.makeText(EventRound.this,"Check your internet connection please",Toast.LENGTH_LONG).show();
+                        }
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        isSubmit=0;
+                    }
+                })
+                .show();
+    }
 }

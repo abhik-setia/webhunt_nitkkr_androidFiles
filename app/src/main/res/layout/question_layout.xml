@@ -69,23 +69,22 @@
             android:id="@+id/save_button"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="0dp"
-            android:layout_height="60dp"
+            android:layout_height="50dp"
             android:layout_weight="49"
             android:background="#1d1616"
             android:text="Save"
             android:textColor="#14ba1a"
-            android:textSize="25dp" />
-
+            android:textSize="20sp" />
 
         <Button
             android:id="@+id/reset_btn"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="0dp"
-            android:layout_height="60dp"
+            android:layout_height="50dp"
             android:layout_weight="49"
             android:background="#1d1616"
             android:text="Reset"
             android:textColor="#14ba1a"
-            android:textSize="25dp" />
+            android:textSize="20sp" />
     </LinearLayout>
 </LinearLayout>
