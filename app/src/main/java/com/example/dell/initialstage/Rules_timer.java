@@ -116,20 +116,28 @@ public class Rules_timer extends AppCompatActivity {
 
         play_btn=(Button)findViewById(R.id.play_btn);
 
-        final TextView timerValue;
-        timerValue = (TextView) findViewById(R.id.timer_textView);
+        final TextView timerValue= (TextView) findViewById(R.id.timer_textView);
         try {
             DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH);
-
             Date date = format.parse(event_date);
+
+            Date adjustedDate=new Date();
+            adjustedDate.setTime(date.getTime()+19800000);
 
             final Calendar calendar=Calendar.getInstance();
 
             SimpleDateFormat df = new SimpleDateFormat("dd MMM yyyy");
             String formatted_date=df.format(calendar.getTime());
            // Log.v("hello",date.getTime()-calendar.getTimeInMillis()+"");
-           // Log.v("hello",date.getTime()+" "+calendar.getTimeInMillis());
-            if((date.toGMTString().substring(0,11)+"").equals(formatted_date)){
+
+            if(formatted_date.charAt(0)== '0' ){
+                int l=formatted_date.length();
+                formatted_date=formatted_date.substring(1,l).trim();
+            }
+
+           // Log.v("hello",date.toGMTString().substring(0,11).trim()+" "+formatted_date);
+
+            if((adjustedDate.toGMTString().substring(0,11).trim()+"").equals(formatted_date)){
 
 
                 play_btn.setVisibility(View.GONE);
@@ -137,13 +145,15 @@ public class Rules_timer extends AppCompatActivity {
                 Date date2 = format.parse(start_time);
                 final Date end_date=format.parse(end_time);
 
-                if((int)(end_date.getTime()-calendar.getTimeInMillis()-19800000)<=0){
+                Log.v("hello",end_date.getTime()+" "+date2.getTime()+" "+calendar.getTimeInMillis());
+
+                if((end_date.getTime()-calendar.getTimeInMillis())<0){
                     play_btn.setVisibility(View.GONE);
                     timerValue.setVisibility(View.VISIBLE);
                     timerValue.setText("Event has ended");
                 }else {
                     //remember the difference between time zone is 5:30 hours
-                    int adjusted_time = (int) (date2.getTime() - calendar.getTimeInMillis() - 19800000);
+                    int adjusted_time = (int) (date2.getTime() - calendar.getTimeInMillis());
 
                     new CountDownTimer(adjusted_time, 1000) {
 
@@ -156,26 +166,15 @@ public class Rules_timer extends AppCompatActivity {
 
                             timerValue.setText("");
                             play_btn.setVisibility(View.VISIBLE);
-                            int adjusted_time = (int) (end_date.getTime() - calendar.getTimeInMillis() - 19800000);
-                            new CountDownTimer(adjusted_time,1000){
-                                @Override
-                                public void onTick(long millisUntilFinished) {
+                            int adjusted_time = (int) (end_date.getTime() - calendar.getTimeInMillis());
 
-                                }
-                                @Override
-                                public void onFinish() {
-                                    play_btn.setVisibility(View.GONE);
-                                    timerValue.setVisibility(View.VISIBLE);
-                                    timerValue.setText("Event has ended");
-                                }
-                            };
                         }
                     }.start();
                 }
             }else{
                 play_btn.setVisibility(View.GONE);
                 timerValue.setVisibility(View.VISIBLE);
-                timerValue.setText("Event will start on "+(date.toGMTString().substring(0,11)+""));
+                timerValue.setText("Event will start on "+(adjustedDate.toGMTString().substring(0,11)+""));
             }
         } catch (ParseException e) {
             e.printStackTrace();
@@ -197,6 +196,9 @@ public class Rules_timer extends AppCompatActivity {
                     newDialogFragment.show(getFragmentManager(),"passcode_fragment");
 
                 }else{
+
+                    //make a request and fetch timer value
+
                     Intent i=new Intent(getApplicationContext(),EventRound.class);
                     i.putExtra("event_name",event_name);
                     startActivity(i);

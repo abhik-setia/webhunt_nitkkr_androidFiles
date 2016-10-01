@@ -42,6 +42,9 @@ public class EnterPasscodeDialogFragment extends DialogFragment {
                                EditText ed=(EditText)view.findViewById(R.id.passcode_editText);
                         user_entered_passcode=ed.getText().toString();
                         if(passcode.equals(user_entered_passcode)){
+
+                            //make a request and fetch timer_value
+
                             //start activity
                             Intent i=new Intent(getActivity().getApplicationContext(),EventRound.class);
                             i.putExtra("event_name",event_name);

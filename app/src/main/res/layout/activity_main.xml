@@ -4,56 +4,67 @@
     android:id="@+id/coord"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" >
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-
-    tools:context="com.example.dell.initialstage.MainActivity">
-
-    <ImageView
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/activity_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:src="@drawable/bk2"/>
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp">
 
-        <TextView
-            android:text="EVENTS"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="32dp"
-            android:id="@+id/textView"
-            android:textColor="@android:color/background_light"
-            android:textSize="30sp"
-            android:fontFamily="monospace" />
+        tools:context="com.example.dell.initialstage.MainActivity">
 
-        <Button
-            android:text="WEBHUNT"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_marginTop="26dp"
-            android:id="@+id/webhunt_event_btn"
-            android:elevation="7dp"
-            android:visibility="visible"
-            android:layout_below="@+id/textView"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentRight="true"
-            android:textColor="@color/textcolorWhite"
-            android:textSize="20sp"
-            android:layout_alignParentEnd="true"
-            android:background="@drawable/button_shape"
-            android:paddingLeft="20dp" />
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/back"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp">
+
+            <TextView
+                android:text="EVENTS"
+                android:textStyle="bold|italic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="32dp"
+                android:id="@+id/textView"
+                android:textColor="@android:color/background_light"
+                android:textSize="30sp"
+                android:fontFamily="monospace" />
+
+            <View
+                android:layout_centerHorizontal="true"
+                android:layout_width="150dp"
+                android:layout_height="2dp"
+                android:background="#c0c0c0"
+                android:layout_margin="0dp"
+                android:layout_below="@id/textView"
+                android:id="@+id/view" />
+
+            <Button
+                android:text="WEBHUNT"
+
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginTop="30dp"
+                android:id="@+id/webhunt_event_btn"
+                android:elevation="7dp"
+                android:visibility="visible"
+                android:layout_below="@+id/view"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentRight="true"
+                android:textColor="@color/textcolorWhite"
+                android:textSize="20sp"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/button_shape"
+                android:paddingLeft="20dp" />
+
+        </RelativeLayout>
 
     </RelativeLayout>
-
-</RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

@@ -1,95 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/question_relative"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/question_relative"
-    >
+    android:orientation="vertical">
 
-    <Button
-        android:text="Save"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/save_button"
-        android:layout_marginRight="63dp"
-        android:layout_marginEnd="63dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginBottom="66dp" />
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="2dp"
-        android:background="#c0c0c0"
-        android:layout_margin="0dp"
-        android:layout_above="@id/save_button"
-        android:id="@+id/view" />
-
-    <Button
-        android:text="Reset"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/reset_btn"
-        android:layout_marginLeft="69dp"
-        android:layout_marginStart="69dp"
-        android:layout_alignBaseline="@+id/save_button"
-        android:layout_alignBottom="@+id/save_button"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="20dp"
-        android:id="@+id/myScrollView"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_above="@+id/view">
+        android:layout_height="0dp"
+        android:layout_weight="9">
 
-    <RelativeLayout
+        <ScrollView
+            android:id="@+id/myScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="20dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.example.dell.initialstage.Typewriter
+                    android:id="@+id/question_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:fitsSystemWindows="true"
+                    android:fontFamily="sans-serif-condensed"
+                    android:text="1. Question goes here"
+                    android:textColor="@android:color/black"
+                    android:textIsSelectable="true"
+                    android:textSize="18sp" />
+
+                <View
+                    android:id="@+id/view2"
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@id/question_textview"
+                    android:layout_margin="10dp"
+                    android:background="#c0c0c0" />
+
+                <EditText
+                    android:id="@+id/answer_edit_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/view2"
+                    android:background="@drawable/border_editext"
+                    android:ems="10"
+                    android:fontFamily="sans-serif"
+                    android:hint="Enter your answer here,\nNot more than 40 characters :)"
+                    android:inputType="textAutoComplete|textMultiLine|textLongMessage"
+                    android:maxLength="40"
+                    android:padding="10dp"
+                    android:textSize="18sp" />
+            </RelativeLayout>
+        </ScrollView>
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
 
-    <com.example.dell.initialstage.Typewriter
-        android:text="1. Question goes here"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:id="@+id/question_textview"
-        android:fontFamily="sans-serif-condensed"
-        android:textSize="18sp"
-        android:textColor="@android:color/black"
-        android:fitsSystemWindows="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:textIsSelectable="true" />
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="#c0c0c0"
-            android:layout_margin="10dp"
-            android:layout_below="@id/question_textview"
-            android:id="@+id/view2" />
-    <EditText
-        android:layout_width="wrap_content"
-        android:inputType="textAutoComplete|textMultiLine|textLongMessage"
-        android:ems="10"
-        android:id="@+id/answer_edit_text"
-        android:hint="Enter your answer here,\nNot more than 40 characters :)"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:fontFamily="sans-serif"
-        android:padding="10dp"
-        android:layout_alignParentBottom="true"
-        android:maxLength="40"
-        android:background="@drawable/border_editext"
-        android:layout_below="@+id/view2" />
-    </RelativeLayout>
-    </ScrollView>
+        <Button
+            android:id="@+id/save_button"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="49"
+            android:background="#1d1616"
+            android:text="Save"
+            android:textColor="#14ba1a"
+            android:textSize="25dp" />
 
-</RelativeLayout>
+
+        <Button
+            android:id="@+id/reset_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="49"
+            android:background="#1d1616"
+            android:text="Reset"
+            android:textColor="#14ba1a"
+            android:textSize="25dp" />
+    </LinearLayout>
+</LinearLayout>

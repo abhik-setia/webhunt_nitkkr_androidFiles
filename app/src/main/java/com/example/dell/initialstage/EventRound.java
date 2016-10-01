@@ -86,8 +86,6 @@ public class EventRound extends AppCompatActivity  {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
-
-
         event_name=getIntent().getStringExtra("event_name");
         getSupportActionBar().setTitle(event_name.toUpperCase());
         //fetch event ddetails
@@ -121,7 +119,6 @@ public class EventRound extends AppCompatActivity  {
         end_time=c.getString(c.getColumnIndexOrThrow(EVENT_DETAILS.FeedEntry.COLUMN_NAME_END_TIME));
         passcode=c.getString(c.getColumnIndexOrThrow(EVENT_DETAILS.FeedEntry.COLUMN_NAME_PASSCODE));
         db.close();
-
 
         //fetch no of questions with count query to dynamically initalise tabs
         QuestionsDetails qd=new QuestionsDetails(getBaseContext());
@@ -335,9 +332,13 @@ public class EventRound extends AppCompatActivity  {
         MenuItem timerItem = menu.findItem(R.id.break_timer);
         timerText= (TextView) MenuItemCompat.getActionView(timerItem);
         timerText.setTypeface(Typeface.MONOSPACE,Typeface.BOLD);
-        startTimer(30000,1000);
+        SharedPreferences sharedPreferences=getSharedPreferences("register_status"+event_name, Context.MODE_PRIVATE);
+        String time_from_pref=sharedPreferences.getString("timer_value","500000");
+        Log.v("hello",time_from_pref);
+        startTimer(Long.parseLong(time_from_pref),1000);
         return true;
     }
+    static int secondsLeft;
 private void startTimer(long duration, long interval) {
 
     CountDownTimer timer = new CountDownTimer(duration, interval) {
@@ -349,13 +350,24 @@ private void startTimer(long duration, long interval) {
 
         @Override
         public void onTick(long millisecondsLeft) {
-            int secondsLeft = (int) Math.round((millisecondsLeft / (double) 1000));
+            secondsLeft = (int) Math.round((millisecondsLeft / (double) 1000));
             timerText.setText(secondsToString(secondsLeft));
         }
     };
 
     timer.start();
 }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        SharedPreferences sharedPreferences=getSharedPreferences("register_status"+event_name, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor=sharedPreferences.edit();
+        editor.putString("timer_value", secondsLeft*10000+"");
+        editor.apply();
+
+    }
+
     private String secondsToString(int improperSeconds) {
 
         //Seconds must be fewer than are in a day

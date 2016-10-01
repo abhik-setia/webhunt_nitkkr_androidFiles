@@ -5,15 +5,18 @@
     android:id="@+id/content_thank_you"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.example.dell.initialstage.ThankYou"
-    tools:showIn="@layout/activity_thank_you">
+    tools:showIn="@layout/activity_thank_you"
+    >
 
-    <TextView
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/bk2"
+        android:scaleType="centerCrop"/>
+    <com.example.dell.initialstage.Typewriter
         android:text="Thank You for taking part in the test :)"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -25,6 +28,6 @@
         android:layout_alignParentStart="true"
         android:textStyle="normal|bold|italic"
         android:textAllCaps="true"
-        android:textColor="@android:color/holo_blue_dark"
+        android:textColor="@color/colorAccent"
         android:textAlignment="center" />
 </RelativeLayout>

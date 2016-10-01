@@ -40,7 +40,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -54,6 +59,8 @@ public class Register_user extends AppCompatActivity {
     public static String url="http://45.55.126.97:3000";
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -196,12 +203,27 @@ public class Register_user extends AppCompatActivity {
                                         values.put(EVENT_DETAILS.FeedEntry.COLUMN_NAME_END_TIME,end_time);
                                         db.insert(EVENT_DETAILS.FeedEntry.TABLE_NAME, null, values);
                                         db.close();
+                                        sharedPreferences=getSharedPreferences("register_status"+event_name, Context.MODE_PRIVATE);
+                                        SharedPreferences.Editor editor=sharedPreferences.edit();
+                                        DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH);
+
+                                        try {
+                                            Date date = format.parse(start_time);
+                                            Date date2 = format.parse(end_time);
+                                            editor.putString("timer_value", String.valueOf((date2.getTime()-date.getTime())));
+                                            editor.apply();
+                                            Log.v("hello",(int) (date2.getTime()-date.getTime())+"");
+
+                                        } catch (ParseException e) {
+                                            e.printStackTrace();
+                                            Log.v("hello","problem");
+                                        }
 
                                     }else{
                                         //update data
                                         EVENT_DETAILS ev = new EVENT_DETAILS(getBaseContext());
                                         SQLiteDatabase db = ev.getWritableDatabase();
-                                        Log.v("hello2",event_date+" "+start_time+" "+end_time);
+
                                         EVENT_DETAILS.updateEventDetails(db,event_name,event_date,passcode,start_time,end_time);
 
                                     }
@@ -260,37 +282,7 @@ public class Register_user extends AppCompatActivity {
                         @Override
                         public void onErrorResponse(VolleyError error) {
 
-//                            if (error instanceof TimeoutError || error instanceof NoConnectionError) {
-//                                Toast.makeText(getBaseContext(), "Unable to connect to server", Toast.LENGTH_LONG).show();
-//                                progressDialog.cancel();
-//                                fetch_event_details(status);
-//                            } else if (error instanceof AuthFailureError) {
-//                                //TODO
-//                                Toast.makeText(getBaseContext(), "AuthFailure", Toast.LENGTH_LONG).show();
 //
-//                                progressDialog.cancel();
-//                                fetch_event_details(status);
-//                            } else if (error instanceof ServerError) {
-//                                Toast.makeText(getBaseContext(), "Server error", Toast.LENGTH_LONG).show();
-//                                progressDialog.cancel();
-//                                fetch_event_details(status);
-//
-//
-//                                //TODO
-//                            } else if (error instanceof NetworkError) {
-//                                //TODO
-//                                Toast.makeText(getBaseContext(), "Unable to connect to server", Toast.LENGTH_LONG).show();
-//                                progressDialog.cancel();
-//                                fetch_event_details(status);
-//
-//
-//                            } else if (error instanceof ParseError) {
-//                                //TODO
-//                                Toast.makeText(getBaseContext(), "Parse error", Toast.LENGTH_LONG).show();
-//                                progressDialog.cancel();
-//                                fetch_event_details(status);
-//
-//                            }
                                Toast.makeText(getBaseContext(), "Unable to connect to server", Toast.LENGTH_LONG).show();
                                 progressDialog.cancel();
                                 startActivity(new Intent(getApplicationContext(),MainActivity.class));

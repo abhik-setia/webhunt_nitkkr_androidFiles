@@ -17,6 +17,9 @@ public class ThankYou extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        Typewriter typewriter=(Typewriter)findViewById(R.id.Thank_you_textview);
+        typewriter.setCharacterDelay(60);
+        typewriter.animateText("Thank You for taking part in the Webhunt :) Be curious, Your perception is everything.");
 
     }
 
