@@ -67,7 +67,7 @@ public class EventRound extends AppCompatActivity  {
     String society;
     String event_date;
     String start_time;
-    String end_time;
+    String end_time,timer_value;
     String question,question_no,answer,user_answer;
     int count_of_questions;
     static Question[] q;
@@ -167,7 +167,7 @@ public class EventRound extends AppCompatActivity  {
 
          tabLayout= (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
-
+        timer_value=getIntent().getStringExtra("timer_value");
     }
 
     public static class QuestionFragment extends Fragment implements View.OnClickListener{
@@ -332,10 +332,7 @@ public class EventRound extends AppCompatActivity  {
         MenuItem timerItem = menu.findItem(R.id.break_timer);
         timerText= (TextView) MenuItemCompat.getActionView(timerItem);
         timerText.setTypeface(Typeface.MONOSPACE,Typeface.BOLD);
-        SharedPreferences sharedPreferences=getSharedPreferences("register_status"+event_name, Context.MODE_PRIVATE);
-        String time_from_pref=sharedPreferences.getString("timer_value","500000");
-        Log.v("hello",time_from_pref);
-        startTimer(Long.parseLong(time_from_pref),1000);
+        startTimer(Integer.valueOf(timer_value),1000);
         return true;
     }
     static int secondsLeft;
@@ -361,10 +358,6 @@ private void startTimer(long duration, long interval) {
     @Override
     protected void onPause() {
         super.onPause();
-        SharedPreferences sharedPreferences=getSharedPreferences("register_status"+event_name, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor=sharedPreferences.edit();
-        editor.putString("timer_value", secondsLeft*10000+"");
-        editor.apply();
 
     }
 

@@ -1,11 +1,14 @@
 package com.example.dell.initialstage;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
@@ -27,7 +30,14 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.hanks.htextview.HTextView;
 import com.hanks.htextview.HTextViewType;
 
@@ -40,7 +50,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+
+import static com.example.dell.initialstage.Register_user.url;
 
 public class Rules_timer extends AppCompatActivity {
 
@@ -188,16 +202,12 @@ public class Rules_timer extends AppCompatActivity {
             public void onClick(View v) {
 
                 if(!passcode.equals("")){
-                    Bundle b=new Bundle();
-                    b.putString("event_name",event_name);
-                    b.putString("passcode",passcode);
-                    DialogFragment newDialogFragment=new EnterPasscodeDialogFragment();
-                    newDialogFragment.setArguments(b);
-                    newDialogFragment.show(getFragmentManager(),"passcode_fragment");
-
+                    verify();
                 }else{
 
                     //make a request and fetch timer value
+
+                    //!imp  !imp !imp This step has been deprecated due to security
 
                     Intent i=new Intent(getApplicationContext(),EventRound.class);
                     i.putExtra("event_name",event_name);
@@ -206,6 +216,77 @@ public class Rules_timer extends AppCompatActivity {
                 }
             }
         });
+
+    }
+    public void verify(){
+        final ProgressDialog progressDialog=new ProgressDialog(Rules_timer.this);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Verifying... Please wait");
+        progressDialog.show();
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url+"/events/isEventActive",
+                new Response.Listener<String>() {
+                    String error,error_message,register_status;
+
+                    @Override
+                    public void onResponse(String result) {
+
+                            try {
+                                JSONObject response = new JSONObject(result);
+//                            error=response.getString("error");
+//                            error_message=response.getString("error_message");
+//
+//                            if(error.equals("true")){
+//                                Toast.makeText(getActivity(),"Something went wrong,Trying to submit again",Toast.LENGTH_SHORT).show();
+//                                progressDialog.cancel();
+//                            }else{
+
+                               String timer_value = response.getString("timer_value");
+
+                                if (!timer_value.equals("-1")) {
+                                    //start activity
+                                    progressDialog.cancel();
+                                    Bundle b=new Bundle();
+                                    b.putString("event_name",event_name);
+                                    b.putString("passcode",passcode);
+                                    b.putString("timer_value",timer_value);
+                                    DialogFragment newDialogFragment=new EnterPasscodeDialogFragment();
+                                    newDialogFragment.setArguments(b);
+                                    newDialogFragment.show(getFragmentManager(),"passcode_fragment");
+                                } else {
+                                    Toast.makeText(getBaseContext(), "Your time slot has ended,Thanks", Toast.LENGTH_LONG).show();
+                                    progressDialog.cancel();
+
+                                }
+//                            }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(getBaseContext(),error.toString(), Toast.LENGTH_LONG).show();
+                            progressDialog.cancel();
+                    }
+                }){
+
+            @Override
+            protected Map<String,String> getParams(){
+                SharedPreferences sharedPreferences=getSharedPreferences("register_status"+event_name, Context.MODE_PRIVATE);
+
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("event_name",event_name);
+                params.put("user_email",sharedPreferences.getString("user_email","").toString());
+                return params;
+            }
+
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(getBaseContext());
+        requestQueue.add(stringRequest);
+
 
     }
     private String secondsToString(int improperSeconds) {
