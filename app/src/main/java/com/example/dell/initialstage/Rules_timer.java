@@ -242,17 +242,20 @@ public class Rules_timer extends AppCompatActivity {
 
                             try {
                                 JSONObject response = new JSONObject(result);
-//                            error=response.getString("error");
-//                            error_message=response.getString("error_message");
-//
-//                            if(error.equals("true")){
-//                                Toast.makeText(getActivity(),"Something went wrong,Trying to submit again",Toast.LENGTH_SHORT).show();
-//                                progressDialog.cancel();
-//                            }else{
+                                   error=response.getString("error");
+                                error_message=response.getString("error_message");
+
+                            if(error.equals("true")){
+                                Toast.makeText(getBaseContext(),"Something went wrong,Trying to submit again",Toast.LENGTH_SHORT).show();
+                                progressDialog.cancel();
+                            }else{
 
                                String timer_value = response.getString("timer_value");
-
-                                if (!timer_value.equals("-1")) {
+                                if(timer_value.equals("-2")){
+                                    Toast.makeText(getBaseContext(), "Thats Illegal you know we are watching you", Toast.LENGTH_LONG).show();
+                                    progressDialog.cancel();
+                                }
+                                else if (!timer_value.equals("-1")) {
                                     //start activity
                                     progressDialog.cancel();
                                     Bundle b=new Bundle();
@@ -262,17 +265,13 @@ public class Rules_timer extends AppCompatActivity {
                                     DialogFragment newDialogFragment=new EnterPasscodeDialogFragment();
                                     newDialogFragment.setArguments(b);
                                     newDialogFragment.show(getFragmentManager(),"passcode_fragment");
-                                } else if(timer_value.equals("-2")){
-                                    Toast.makeText(getBaseContext(), "Thats Illegal you know we are watching you", Toast.LENGTH_LONG).show();
-                                    progressDialog.cancel();
                                 }
                                 else {
                                     Toast.makeText(getBaseContext(), "Your time slot has ended,Thanks", Toast.LENGTH_LONG).show();
                                     progressDialog.cancel();
-
                                     ask_user_again();
                                 }
-//                            }
+                            }
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -282,7 +281,7 @@ public class Rules_timer extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                            Toast.makeText(getBaseContext(),error.toString(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getBaseContext(),"No network Buddy :(", Toast.LENGTH_LONG).show();
                             progressDialog.cancel();
                     }
                 }){
@@ -313,7 +312,7 @@ public class Rules_timer extends AppCompatActivity {
     public void ask_user_again(){
         new AlertDialog.Builder(Rules_timer.this)
                 .setIcon(android.R.drawable.ic_dialog_info)
-                .setTitle("We lost you buddy. Network failure,Submit again ?")
+                .setMessage("You liked it so much that you haven't even submiitted :P. Wanna submit ? ")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener()
                 {
                     @Override

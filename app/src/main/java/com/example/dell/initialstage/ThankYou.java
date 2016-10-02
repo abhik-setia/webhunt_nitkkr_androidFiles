@@ -6,6 +6,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ImageView;
 
 public class ThankYou extends AppCompatActivity {
 
@@ -21,6 +22,8 @@ public class ThankYou extends AppCompatActivity {
         typewriter.setCharacterDelay(60);
         typewriter.animateText("Thank You for taking part in the Webhunt :) Be curious, Your perception is everything.");
 
+        ImageView imageView=(ImageView)findViewById(R.id.thank_you_bk_imageview);
+        imageView.setImageBitmap(SplashScreen.decodeSampledBitmapFromResource(getResources(),R.drawable.thank_you_bk,300,300));
     }
 
 }

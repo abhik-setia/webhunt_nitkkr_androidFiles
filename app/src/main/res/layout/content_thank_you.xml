@@ -14,10 +14,12 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/bk2"
+        android:id="@+id/thank_you_bk_imageview"
+        android:src="@drawable/thank_you_bk_compressed"
         android:scaleType="centerCrop"/>
+
     <com.example.dell.initialstage.Typewriter
-        android:text="Thank You for taking part in the test :)"
+        android:text='"Thank You for taking part in the test :)"'
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="52dp"
@@ -26,8 +28,26 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:textStyle="normal|bold|italic"
+        android:textStyle="bold"
         android:textAllCaps="true"
-        android:textColor="@color/colorAccent"
+        android:typeface="monospace"
+        android:textColor="@color/textcolorWhite"
         android:textAlignment="center" />
+
+    <TextView
+        android:text="beleive you can and you are halfway there."
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="72dp"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textAllCaps="true"
+        android:typeface="monospace"
+        android:textColor="@color/textcolorWhite"
+        android:id="@+id/textView2"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:textAlignment="center"/>
+
 </RelativeLayout>

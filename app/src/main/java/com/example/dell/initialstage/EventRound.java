@@ -323,7 +323,7 @@ public class EventRound extends AppCompatActivity  {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         isSubmit=0;
-                        start_submitting_answers();
+                        start_submitting_answers(0);
                     }
 
                 })
@@ -353,7 +353,7 @@ private void startTimer(long duration, long interval) {
 
         @Override
         public void onFinish() {
-            start_submitting_answers();
+            start_submitting_answers(1);
         }
 
         @Override
@@ -409,13 +409,13 @@ private void startTimer(long duration, long interval) {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_finish) {
-            start_submitting_answers();
+            start_submitting_answers(0);
         }
 
         return super.onOptionsItemSelected(item);
     }
     int x=0;
-    public void start_submitting_answers(){
+    public void start_submitting_answers(int status){
         progressDialog=new ProgressDialog(this);
         progressDialog.setCancelable(false);
 
@@ -450,9 +450,9 @@ private void startTimer(long duration, long interval) {
                 answer=c.getString(c.getColumnIndexOrThrow(QuestionsDetails.FeedEntry.COLUMN_NAME_ANSWER));
                 user_answer=c.getString(c.getColumnIndexOrThrow(QuestionsDetails.FeedEntry.COLUMN_NAME_USER_ANSWER));
                 if(user_answer!=null){
-                    submit_answers(question_no,user_answer,answer);
+                    submit_answers(question_no,user_answer,answer,status);
                 }else{
-                    submit_answers(question_no,new String(""),answer);
+                    submit_answers(question_no,new String(""),answer,status);
                 }
             }while (c.moveToNext());
         }
@@ -460,7 +460,7 @@ private void startTimer(long duration, long interval) {
 
     private static int isSubmit=0;
 
-    public void submit_answers(final String answer_no, final String answer, final String original_answer){
+    public void submit_answers(final String answer_no, final String answer, final String original_answer, final int status){
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url+"/events/submitTest",
                 new Response.Listener<String>() {
@@ -498,8 +498,7 @@ private void startTimer(long duration, long interval) {
                         //Toast.makeText(getBaseContext(),error.toString(), Toast.LENGTH_LONG).show();
                         isSubmit++;
                         if(isSubmit==1)
-                        ask_user_again();
-
+                        ask_user_again(status);
                     }
                 }){
             @Override
@@ -540,10 +539,10 @@ private void startTimer(long duration, long interval) {
 
         setMobileDataEnabledMethod.invoke(connectivityManager, enabled);
     }
-    public void ask_user_again(){
+    public void ask_user_again(final int status){
         new AlertDialog.Builder(EventRound.this)
                 .setIcon(android.R.drawable.ic_dialog_info)
-                .setTitle("We lost you buddy. Network failure,Submit again ?")
+                .setMessage("We lost you buddy. Network failure,Submit again ?")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener()
                 {
                     @Override
@@ -551,7 +550,7 @@ private void startTimer(long duration, long interval) {
 
                         isSubmit=0;
                         if(isNetworkAvailable())
-                        start_submitting_answers();
+                        start_submitting_answers(status);
                         else{
                             try {
                                 setMobileDataEnabled(EventRound.this,false);
@@ -574,6 +573,8 @@ private void startTimer(long duration, long interval) {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         isSubmit=0;
+                        if(status==1)
+                         ask_user_again(1);
                     }
                 })
                 .show();
